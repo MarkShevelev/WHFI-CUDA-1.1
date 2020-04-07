@@ -13,6 +13,9 @@
     <Filter Include="Math\Device\Kernel">
       <UniqueIdentifier>{6d23c7a5-4976-4b26-8a0f-fa2e3717008c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DeviceHelper">
+      <UniqueIdentifier>{9c289ed8-3e5d-4a37-a590-cbc6c2a02c31}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep.cuh">
@@ -21,5 +24,13 @@
     <ClInclude Include="thomson_sweep_kernel.cuh">
       <Filter>Math\Device\Kernel</Filter>
     </ClInclude>
+    <ClInclude Include="Device.cuh">
+      <Filter>DeviceHelper</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="Device.cu">
+      <Filter>DeviceHelper</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
