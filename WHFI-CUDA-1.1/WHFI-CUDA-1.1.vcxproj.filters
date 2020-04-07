@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Math">
+      <UniqueIdentifier>{0af1399f-ae58-467c-9493-37a2e8cb5d13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Device">
+      <UniqueIdentifier>{bb5bad51-f61e-4672-869e-f279c629f8f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Device\SingleThread">
+      <UniqueIdentifier>{14059346-a424-462e-9875-a46bbb5e6da7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="thomson_sweep.cuh">
+      <Filter>Math\Device\SingleThread</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
