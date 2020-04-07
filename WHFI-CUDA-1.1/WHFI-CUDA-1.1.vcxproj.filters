@@ -24,18 +24,18 @@
     <ClInclude Include="thomson_sweep_kernel.cuh">
       <Filter>Math\Device\Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="Device.cuh">
+    <ClInclude Include="DeviceError.h">
       <Filter>DeviceHelper</Filter>
     </ClInclude>
-    <ClInclude Include="DeviceError.h">
+    <ClInclude Include="Device.h">
       <Filter>DeviceHelper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Device.cu">
+    <CudaCompile Include="DeviceError.cpp">
       <Filter>DeviceHelper</Filter>
     </CudaCompile>
-    <CudaCompile Include="DeviceError.cpp">
+    <CudaCompile Include="Device.cpp">
       <Filter>DeviceHelper</Filter>
     </CudaCompile>
   </ItemGroup>

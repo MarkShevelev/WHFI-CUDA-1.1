@@ -11,13 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Device.cuh" />
+    <ClInclude Include="Device.h" />
     <ClInclude Include="DeviceError.h" />
     <ClInclude Include="thomson_sweep.cuh" />
     <ClInclude Include="thomson_sweep_kernel.cuh" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Device.cu" />
+    <CudaCompile Include="Device.cpp" />
     <CudaCompile Include="DeviceError.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
