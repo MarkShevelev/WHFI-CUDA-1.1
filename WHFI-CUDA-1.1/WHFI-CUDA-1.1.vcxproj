@@ -13,12 +13,16 @@
   <ItemGroup>
     <ClInclude Include="Device.h" />
     <ClInclude Include="DeviceError.h" />
+    <ClInclude Include="DeviceMemory.h" />
     <ClInclude Include="thomson_sweep.cuh" />
     <ClInclude Include="thomson_sweep_kernel.cuh" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="Device.cpp" />
     <CudaCompile Include="DeviceError.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DeviceMemory.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1DDF80D6-D725-4628-A355-CCDD746A6BD6}</ProjectGuid>

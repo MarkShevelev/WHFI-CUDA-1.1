@@ -30,6 +30,9 @@
     <ClInclude Include="Device.h">
       <Filter>DeviceHelper</Filter>
     </ClInclude>
+    <ClInclude Include="DeviceMemory.h">
+      <Filter>DeviceHelper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">
@@ -38,5 +41,10 @@
     <CudaCompile Include="Device.cpp">
       <Filter>DeviceHelper</Filter>
     </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DeviceMemory.cpp">
+      <Filter>DeviceHelper</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
