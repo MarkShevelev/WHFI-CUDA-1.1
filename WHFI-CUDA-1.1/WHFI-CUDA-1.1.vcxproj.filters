@@ -10,10 +10,16 @@
     <Filter Include="Math\Device\SingleThread">
       <UniqueIdentifier>{14059346-a424-462e-9875-a46bbb5e6da7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Math\Device\Kernel">
+      <UniqueIdentifier>{6d23c7a5-4976-4b26-8a0f-fa2e3717008c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep.cuh">
       <Filter>Math\Device\SingleThread</Filter>
+    </ClInclude>
+    <ClInclude Include="thomson_sweep_kernel.cuh">
+      <Filter>Math\Device\Kernel</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
