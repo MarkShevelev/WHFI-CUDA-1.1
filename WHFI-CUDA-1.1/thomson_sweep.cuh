@@ -2,7 +2,7 @@
 
  namespace iki { namespace math { namespace device { 
 	 template <typename T>
-	 __device__ void thomson_sweep(T *a, T *b, T *c, T *d, T *x, size_t size, size_t stride = 1) {
+	 __device__ void thomson_sweep(T *a, T *b, T *c, T *d, T *x, unsigned size, unsigned stride = 1) {
 		 for (size_t idx = 1; idx != size; ++idx) {
 			 size_t stride_idx = idx * stride;
 			 T w = a[stride_idx] / b[stride_idx - stride];
