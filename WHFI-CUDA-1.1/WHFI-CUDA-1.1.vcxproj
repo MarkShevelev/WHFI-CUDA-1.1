@@ -15,9 +15,6 @@
     <ClInclude Include="thomson_sweep.cuh" />
     <ClInclude Include="thomson_sweep_kernel.cuh" />
   </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="thomson_sweep_test.cu" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1DDF80D6-D725-4628-A355-CCDD746A6BD6}</ProjectGuid>
     <RootNamespace>WHFI_CUDA_1_1</RootNamespace>

@@ -23,7 +23,4 @@
     </ClInclude>
     <ClInclude Include="initial_matrix.cuh" />
   </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="thomson_sweep_test.cu" />
-  </ItemGroup>
 </Project>
