@@ -16,4 +16,7 @@
       <Filter>Math\Device\SingleThread</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="thomson_sweep_test.cu" />
+  </ItemGroup>
 </Project>
