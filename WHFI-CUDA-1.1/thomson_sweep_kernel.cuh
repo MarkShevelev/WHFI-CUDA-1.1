@@ -1,3 +1,5 @@
+#pragma once
+
 #include "thomson_sweep.cuh"
 
 #include <cuda_runtime.h>
