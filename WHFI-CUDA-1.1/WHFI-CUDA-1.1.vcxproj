@@ -12,11 +12,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Device.cuh" />
+    <ClInclude Include="DeviceError.cuh" />
     <ClInclude Include="thomson_sweep.cuh" />
     <ClInclude Include="thomson_sweep_kernel.cuh" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="Device.cu" />
+    <CudaCompile Include="DeviceError.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1DDF80D6-D725-4628-A355-CCDD746A6BD6}</ProjectGuid>
