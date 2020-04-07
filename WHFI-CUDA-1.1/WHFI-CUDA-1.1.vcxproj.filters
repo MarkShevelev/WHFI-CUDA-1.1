@@ -27,7 +27,7 @@
     <ClInclude Include="Device.cuh">
       <Filter>DeviceHelper</Filter>
     </ClInclude>
-    <ClInclude Include="DeviceError.cuh">
+    <ClInclude Include="DeviceError.h">
       <Filter>DeviceHelper</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,7 +35,7 @@
     <CudaCompile Include="Device.cu">
       <Filter>DeviceHelper</Filter>
     </CudaCompile>
-    <CudaCompile Include="DeviceError.cu">
+    <CudaCompile Include="DeviceError.cpp">
       <Filter>DeviceHelper</Filter>
     </CudaCompile>
   </ItemGroup>
