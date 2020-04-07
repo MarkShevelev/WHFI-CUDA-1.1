@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cuda_runtime.h>
 
  namespace iki { namespace math { namespace device { 
