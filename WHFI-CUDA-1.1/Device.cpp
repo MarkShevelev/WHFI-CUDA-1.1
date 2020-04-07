@@ -1,5 +1,5 @@
-#include "Device.cuh"
-#include "DeviceError.cuh"
+#include "Device.h"
+#include "DeviceError.h"
 
 #include <cuda_runtime.h>
 
