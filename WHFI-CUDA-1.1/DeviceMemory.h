@@ -9,10 +9,10 @@ namespace iki {
 	public:
 		DeviceMemory(unsigned byte_size);
 
-		DeviceMemory(DeviceMemory const &src) = delete;
-		DeviceMemory(DeviceMemory &src) = delete;
-		DeviceMemory& operator=(DeviceMemory const &src) = delete;
-		DeviceMemory& operator=(DeviceMemory &&src) = delete;
+		DeviceMemory(DeviceMemory const &src);
+		DeviceMemory(DeviceMemory &&src);
+		DeviceMemory& operator=(DeviceMemory const &src);
+		DeviceMemory& operator=(DeviceMemory &&src);
 
 		void *get_pointer() const;
 		unsigned get_size() const;
