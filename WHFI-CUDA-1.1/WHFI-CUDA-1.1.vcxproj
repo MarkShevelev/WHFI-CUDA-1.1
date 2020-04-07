@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep.cuh" />
+    <ClInclude Include="thomson_sweep_kernel.cuh" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="thomson_sweep_test.cu" />
