@@ -21,6 +21,7 @@
     <ClInclude Include="thomson_sweep_kernel.cuh">
       <Filter>Math\Device\Kernel</Filter>
     </ClInclude>
+    <ClInclude Include="initial_matrix.cuh" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="thomson_sweep_test.cu" />
