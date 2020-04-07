@@ -16,6 +16,9 @@
     <Filter Include="DeviceHelper">
       <UniqueIdentifier>{9c289ed8-3e5d-4a37-a590-cbc6c2a02c31}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Diffusion">
+      <UniqueIdentifier>{1961bb55-297e-483b-94b3-60593de5ebc9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep.cuh">
@@ -32,6 +35,9 @@
     </ClInclude>
     <ClInclude Include="DeviceMemory.h">
       <Filter>DeviceHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="transpose.cuh">
+      <Filter>Math\Device\Kernel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

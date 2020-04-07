@@ -16,6 +16,7 @@
     <ClInclude Include="DeviceMemory.h" />
     <ClInclude Include="thomson_sweep.cuh" />
     <ClInclude Include="thomson_sweep_kernel.cuh" />
+    <ClInclude Include="transpose.cuh" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="Device.cpp" />
