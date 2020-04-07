@@ -1,4 +1,5 @@
 #include "Device.cuh"
+#include "DeviceError.cuh"
 
 #include <cuda_runtime.h>
 
@@ -10,7 +11,7 @@ namespace iki {
 	Device::Device(int device) {
 		cudaError_t cudaStatus;
 		if (cudaSuccess != (cudaStatus = cudaSetDevice(device)))
-			throw runtime_error(cudaGetErrorString(cudaStatus));
+			throw DeviceError(cudaStatus);
 	}
 
 	Device::~Device() noexcept {
