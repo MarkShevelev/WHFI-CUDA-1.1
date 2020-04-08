@@ -39,6 +39,12 @@
     <ClInclude Include="transpose.cuh">
       <Filter>Math\Device\Kernel</Filter>
     </ClInclude>
+    <ClInclude Include="OneDimensionalMultithreadDiffusion.cuh">
+      <Filter>Diffusion</Filter>
+    </ClInclude>
+    <ClInclude Include="forward_step_matrix_calculation_kernel.cuh">
+      <Filter>Math\Device\Kernel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">
@@ -47,6 +53,7 @@
     <CudaCompile Include="Device.cpp">
       <Filter>DeviceHelper</Filter>
     </CudaCompile>
+    <CudaCompile Include="Test.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceMemory.cpp">

@@ -14,6 +14,8 @@
     <ClInclude Include="Device.h" />
     <ClInclude Include="DeviceError.h" />
     <ClInclude Include="DeviceMemory.h" />
+    <ClInclude Include="forward_step_matrix_calculation_kernel.cuh" />
+    <ClInclude Include="OneDimensionalMultithreadDiffusion.cuh" />
     <ClInclude Include="thomson_sweep.cuh" />
     <ClInclude Include="thomson_sweep_kernel.cuh" />
     <ClInclude Include="transpose.cuh" />
@@ -21,6 +23,7 @@
   <ItemGroup>
     <CudaCompile Include="Device.cpp" />
     <CudaCompile Include="DeviceError.cpp" />
+    <CudaCompile Include="Test.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceMemory.cpp" />
