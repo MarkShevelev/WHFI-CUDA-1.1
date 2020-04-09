@@ -23,6 +23,10 @@ int main() {
 		cout << endl;
 	}
 
+	for (auto idx = bounds.first(); idx != bounds.last(); bounds.next(idx)) {
+		cout << idx[0] << ' ' << idx[1] << '\n';
+	}
+
 
 	return 0;
 }
