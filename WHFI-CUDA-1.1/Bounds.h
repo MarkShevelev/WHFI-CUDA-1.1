@@ -14,11 +14,11 @@ namespace iki {
 		}
 
 		Bounds(Bounds<Dim> const &src) {
-			std::copy(src.begin(), src.end(), components.begin());
+			std::copy(src.components.begin(), src.components.end(), components.begin());
 		}
 
 		Bounds(Bounds<Dim> &&src) {
-			std::copy(src.begin(), src.end(), components.begin());
+			std::copy(src.components.begin(), src.components.end(), components.begin());
 		}
 
 		Bounds<Dim> &operator=(Bounds<Dim> const &src) {
@@ -59,8 +59,7 @@ namespace iki {
 
 		Index<Dim> last() const {
 			Index<Dim> result;
-			for (unsigned d = 0; d != Dim; ++d)
-				result[d] = components[d] == 0 ? 0 : components[d] - 1;
+			result[Dim - 1] = components[Dim - 1];
 			return result;
 		}
 
@@ -75,7 +74,7 @@ namespace iki {
 						carry_flag = true;
 					}
 				}
-			return idx;
+			return carry_flag ? (idx = last()) : idx;
 		}
 
 		Index<Dim> next(Index<Dim> const &idx) const {
