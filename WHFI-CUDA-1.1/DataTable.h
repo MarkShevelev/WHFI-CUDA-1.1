@@ -39,7 +39,7 @@ namespace iki {
 		}
 
 		Range<typename  std::vector<T>::iterator> operator[](size_t scalar_index) {
-			return Range{ data.cbegin() + scalar_index * Scale, data.cbegin() + (scalar_index + 1) * Scale };
+			return Range{ data.begin() + scalar_index * Scale, data.begin() + (scalar_index + 1) * Scale };
 		}
 
 		T *raw_data() {
