@@ -57,6 +57,9 @@
     <ClInclude Include="IndexIO.h">
       <Filter>Table</Filter>
     </ClInclude>
+    <ClInclude Include="UniformSpace.h">
+      <Filter>Table</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">
