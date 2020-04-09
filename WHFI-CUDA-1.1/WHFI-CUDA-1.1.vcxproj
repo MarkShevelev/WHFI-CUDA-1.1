@@ -22,6 +22,7 @@
     <ClInclude Include="thomson_sweep.cuh" />
     <ClInclude Include="thomson_sweep_kernel.cuh" />
     <ClInclude Include="transpose.cuh" />
+    <ClInclude Include="UniformGrid.h" />
     <ClInclude Include="UniformSpace.h" />
   </ItemGroup>
   <ItemGroup>

@@ -60,6 +60,9 @@
     <ClInclude Include="UniformSpace.h">
       <Filter>Table</Filter>
     </ClInclude>
+    <ClInclude Include="UniformGrid.h">
+      <Filter>Table</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">
