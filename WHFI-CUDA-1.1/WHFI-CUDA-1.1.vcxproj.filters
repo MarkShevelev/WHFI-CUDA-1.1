@@ -51,6 +51,9 @@
     <ClInclude Include="Bounds.h">
       <Filter>Table</Filter>
     </ClInclude>
+    <ClInclude Include="DataTableIO.h">
+      <Filter>Table</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">
@@ -64,6 +67,5 @@
     <ClCompile Include="DeviceMemory.cpp">
       <Filter>DeviceHelper</Filter>
     </ClCompile>
-    <ClCompile Include="Test.cpp" />
   </ItemGroup>
 </Project>

@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="Bounds.h" />
     <ClInclude Include="DataTable.h" />
+    <ClInclude Include="DataTableIO.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="DeviceError.h" />
     <ClInclude Include="DeviceMemory.h" />
@@ -27,7 +28,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceMemory.cpp" />
-    <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1DDF80D6-D725-4628-A355-CCDD746A6BD6}</ProjectGuid>
