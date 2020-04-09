@@ -22,10 +22,18 @@ namespace iki {
 
 	template <typename T, unsigned Dim, unsigned Scale>
 	struct DataTable final {
-		DataTable(Bounds<Dim> const &bounds): bounds(bounds), data(bounds.size()*Scale ) { }
+		DataTable() { }
+		DataTable(Bounds<Dim> const &bounds) : bounds(bounds), data(bounds.size() * Scale) { }
 
-		Bounds<Dim> const& get_bounds() const { return bounds; }
-		Bounds<Dim>& get_bounds() { return bounds; }
+		Bounds<Dim> const& get_bounds() const { 
+			return bounds; 
+		}
+
+		DataTable<T, Dim, Scale>& set_bounds(Bounds<Dim> const &bounds) { 
+			this->bounds = bounds; 
+			data.resize(bounds.size() * Scale);
+			return *this;
+		}
 
 		Range<typename std::vector<T>::const_iterator> operator[](Index<Dim> const &idx) const {
 			return (*this)[bounds.scalar_index(idx)];
