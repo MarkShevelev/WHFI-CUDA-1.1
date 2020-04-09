@@ -1,101 +1,51 @@
 #pragma once
 
-#include <array>
-#include <algorithm>
+#include "Index.h"
+#include "Bounds.h"
 
 namespace iki {
-	template <unsigned Dim>
-	struct Bounds final {
-		size_t operator[](unsigned d) const { return componets[d]; }
-		size_t &operator[](unsigned d) { return componets[d]; }
+	template <typename Iterator>
+	struct Range final {
+		Range(Iterator begin, Iterator end): begin(begin), end(end) { }
+		
+		Iterator begin() const { begin; }
+		Iterator end() const { end; }
 
-		size_t size() const {
-			size_t size = 1;
-			for (unsigned d = 0; d != Dim; ++d)
-				size *= components[d];
-			return size;
-		}
-
-		Bounds<Dim> index_size() const {
-			Bounds<Dim> vector_idx;
-			vector_idx[0] = 1;
-			for (unsigned d = 1; d != Dim; ++d)
-				vector_idx[d] = vector_idx[d - 1] * components[d - 1];
-			return vector_idx;
-		}
+		Iterator begin() { begin; }
+		Iterator end() { end; }
 
 	private:
-		std::array<size_t,Dim> components;
+		Iterator begin, end;
 	};
 
-	template <unsigned Dim>
-	bool operator==(Bounds<Dim> const &lha, Bounds<Dim> const &rha) {
-		for (unsigned d = 0; d != Dim; ++d)
-			if (lha[d] != rha[d]) return false;
-		return true;
-	}
+	template <typename T, unsigned Dim, unsigned Scale>
+	struct DataTable final {
+		DataTable(Bounds<Dim> bounds): bounds(bounds), data(bounds.size()*Scale ) { }
 
-	template <unsigned Dim>
-	struct Index final {
-		Index(Bounds<Dim> const &bounds): bounds(bounds) { }
-		Index(Index<Dim> const &src): bounds(src.bounds), components(src.components) { }
-		Index(Index<Dim> &&src) = default;
-
-		size_t operator[](unsigned d) const { return componets[d]; }
-		size_t &operator[](unsigned d) { return componets[d]; }
-		Bounds<Dim> get_bounds() const { return bounds; }
-
-		Index<Dim> &operator=(Index<Dim> const &src) { components = src.components; return *this; }
-		Index<Dim> &operator=(Index<Dim> &&src) { components = std::move(src.components); return *this; }
-
-		size_t scalar() const {
-			auto index_size = bounds.index_size();
-			size_t scalar_index;
-			for (unsigned d = 0; d != Dim; ++d)
-				scalar_index += index_size[d] * components[d];
-			return scalar_index;
+		Range<std::vector<T>::const_iterator> operator[](Index<Dim> const &idx) const {
+			auto offset = bounds.scalar_index(idx);
+			return { data.cbegin() + offset*Scale, data.cbegin() + (offset + 1)*Scale };
 		}
 
-		Index<Dim> first() const {
-			return Index<Dim>(bounds);
+		Range<std::vector<T>::iterator> operator[](Index<Dim> const &idx) {
+			auto offset = bounds.scalar_index(idx);
+			return { data.begin() + offset, data.begin() + offset + Scale };
 		}
 
-		Index<Dim> last() const {
-			Index<Dim> result;
-			for (unsigned d = 0; d != Dim; ++d)
-				result[d] = bounds[d] == 0 ? 0 : bounds[d] - 1;
-			return result;
+		Range<std::vector<T>::const_iterator> operator[](size_t scalar_index) const {
+			return { data.cbegin() + scalar_index * Scale, data.cbegin() + (scalar_index + 1) * Scale };
 		}
 
-		Index<Dim>& operator++() {
-			bool carry_flag = true;
-			for (unsigned d = 0u; d != Dim; ++d)
-				if (carry_flag) {
-					components[d] += 1u;
-					carry_flag = false;
-					if (components[d] == bounds[d]) {
-						components[d] = 0u;
-						carry_flag = true;
-					}
-				}
-			return *this;
+		Range<std::vector<T>::iterator> operator[](size_t scalar_index) {
+			return { data.cbegin() + scalar_index * Scale, data.cbegin() + (scalar_index + 1) * Scale };
 		}
 
-		Index<Dim> operator++(int _) {
-			Index<Dim> return_value(*this);
-			++(*this);
-			return return_value;
+		T *raw_data() {
+			return data.data();
 		}
 
 	private:
-		std::array<size_t, Dim> components;
 		Bounds<Dim> const bounds;
+		std::vector<T> data;
 	};
-
-	template <unsigned Dim>
-	bool operator==(Index<Dim> const &lha, Index<Dim> const &rha) {
-		for (unsigned d = 0; d != Dim; ++d)
-			if (lha[d] != rha[d]) return false;
-		return true;
-	}
 }

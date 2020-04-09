@@ -45,6 +45,12 @@
     <ClInclude Include="DataTable.h">
       <Filter>Table</Filter>
     </ClInclude>
+    <ClInclude Include="Index.h">
+      <Filter>Table</Filter>
+    </ClInclude>
+    <ClInclude Include="Bounds.h">
+      <Filter>Table</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">
