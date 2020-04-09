@@ -64,5 +64,6 @@
     <ClCompile Include="DeviceMemory.cpp">
       <Filter>DeviceHelper</Filter>
     </ClCompile>
+    <ClCompile Include="Test.cpp" />
   </ItemGroup>
 </Project>
