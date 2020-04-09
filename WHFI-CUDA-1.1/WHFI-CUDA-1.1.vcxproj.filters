@@ -19,6 +19,9 @@
     <Filter Include="Diffusion">
       <UniqueIdentifier>{1961bb55-297e-483b-94b3-60593de5ebc9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Table">
+      <UniqueIdentifier>{41a5b561-e97c-479f-9e97-05e0e440d4fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep.cuh">
@@ -38,6 +41,9 @@
     </ClInclude>
     <ClInclude Include="transpose.cuh">
       <Filter>Math\Device\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="DataTable.h">
+      <Filter>Table</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

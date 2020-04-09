@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataTable.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="DeviceError.h" />
     <ClInclude Include="DeviceMemory.h" />
