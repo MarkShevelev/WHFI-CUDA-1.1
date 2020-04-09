@@ -26,19 +26,19 @@ namespace iki {
 
 		Bounds<Dim> const &get_bounds() const { return bounds; }
 
-		Range<std::vector<T>::const_iterator> operator[](Index<Dim> const &idx) const {
+		Range<typename std::vector<T>::const_iterator> operator[](Index<Dim> const &idx) const {
 			return (*this)[bounds.scalar_index(idx)];
 		}
 
-		Range<std::vector<T>::iterator> operator[](Index<Dim> const &idx) {
+		Range<typename  std::vector<T>::iterator> operator[](Index<Dim> const &idx) {
 			return (*this)[bounds.scalar_index(idx)];
 		}
 
-		Range<std::vector<T>::const_iterator> operator[](size_t scalar_index) const {
+		Range<typename  std::vector<T>::const_iterator> operator[](size_t scalar_index) const {
 			return { data.cbegin() + scalar_index * Scale, data.cbegin() + (scalar_index + 1) * Scale };
 		}
 
-		Range<std::vector<T>::iterator> operator[](size_t scalar_index) {
+		Range<typename  std::vector<T>::iterator> operator[](size_t scalar_index) {
 			return { data.cbegin() + scalar_index * Scale, data.cbegin() + (scalar_index + 1) * Scale };
 		}
 
