@@ -6,28 +6,28 @@ namespace iki {
 	template <unsigned Dim>
 	struct Bounds final {
 		Bounds() {
-			std::fill(componets.begin(), componets.end(), 0u);
+			std::fill(components.begin(), components.end(), 0u);
 		}
 
 		Bounds(std::initializer_list<size_t> l) {
-			std::copy(l.begin(), l.end(), componets.begin());
+			std::copy(l.begin(), l.end(), components.begin());
 		}
 
 		Bounds(Bounds<Dim> const &src) {
-			std::copy(src.begin(), src.end(), componets.begin());
+			std::copy(src.begin(), src.end(), components.begin());
 		}
 
 		Bounds(Bounds<Dim> &&src) {
-			std::copy(src.begin(), src.end(), componets.begin());
+			std::copy(src.begin(), src.end(), components.begin());
 		}
 
 		Bounds<Dim> &operator=(Bounds<Dim> const &src) {
-			std::copy(src.begin(), src.end(), componets.begin());
+			std::copy(src.begin(), src.end(), components.begin());
 			return *this;
 		}
 
 		Bounds<Dim> &operator=(Bounds<Dim> &&src) {
-			std::copy(src.begin(), src.end(), componets.begin());
+			std::copy(src.begin(), src.end(), components.begin());
 			return *this;
 		}
 

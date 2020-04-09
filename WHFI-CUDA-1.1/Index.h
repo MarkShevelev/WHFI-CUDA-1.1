@@ -8,28 +8,28 @@ namespace iki {
 	template <unsigned Dim>
 	struct Index final {
 		Index() {
-			std::fill(componets.begin(), componets.end(), 0u);
+			std::fill(components.begin(), components.end(), 0u);
 		}
 
 		Index(std::initializer_list<size_t> l) {
-			std::copy(l.begin(), l.end(), componets.begin());
+			std::copy(l.begin(), l.end(), components.begin());
 		}
 
 		Index(Index<Dim> const &src) {
-			std::copy(src.begin(), src.end(), componets.begin());
+			std::copy(src.begin(), src.end(), components.begin());
 		}
 
 		Index(Index<Dim> &&src) {
-			std::copy(src.begin(), src.end(), componets.begin());
+			std::copy(src.begin(), src.end(), components.begin());
 		}
 
 		Index<Dim> &operator=(Index<Dim> const &src) {
-			std::copy(src.begin(), src.end(), componets.begin());
+			std::copy(src.begin(), src.end(), components.begin());
 			return *this;
 		}
 
 		Index<Dim> &operator=(Index<Dim> &&src) {
-			std::copy(src.begin(), src.end(), componets.begin());
+			std::copy(src.begin(), src.end(), components.begin());
 			return *this;
 		}
 
@@ -37,7 +37,7 @@ namespace iki {
 		size_t &operator[](unsigned d) { return componets[d]; }
 
 	private:
-		std::array<size_t, Dim> componets;
+		std::array<size_t, Dim> components;
 	};
 
 	template <unsigned Dim>
