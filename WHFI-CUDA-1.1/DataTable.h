@@ -3,6 +3,8 @@
 #include "Index.h"
 #include "Bounds.h"
 
+#include <vector>
+
 namespace iki {
 	template <typename Iterator>
 	struct Range final {
