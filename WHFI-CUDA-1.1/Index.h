@@ -23,12 +23,12 @@ namespace iki {
 			std::copy(src.components.begin(), src.components.end(), components.begin());
 		}
 
-		Index<Dim> &operator=(Index<Dim> const &src) {
+		Index<Dim>& operator=(Index<Dim> const &src) {
 			std::copy(src.components.begin(), src.components.end(), components.begin());
 			return *this;
 		}
 
-		Index<Dim> &operator=(Index<Dim> &&src) {
+		Index<Dim>& operator=(Index<Dim> &&src) {
 			std::copy(src.components.begin(), src.components.end(), components.begin());
 			return *this;
 		}
