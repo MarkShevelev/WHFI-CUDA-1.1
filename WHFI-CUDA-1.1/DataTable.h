@@ -3,35 +3,35 @@
 #include "Index.h"
 #include "Bounds.h"
 
+#include <iterator>
 #include <vector>
 
 namespace iki {
-	template <typename Iterator>
-	struct Range final {
-		Range(Iterator begin, Iterator end): begin(begin), end(end) { }
-		
-		Iterator begin() const { begin; }
-		Iterator end() const { end; }
+	template <typename It>
+	struct Range {
+		using value_type = typename std::iterator_traits<It>::value_type;
 
-		Iterator begin() { begin; }
-		Iterator end() { end; }
+		Range(It begin, It end) : begin_(begin), end_(end) { }
+		It begin() const { return begin_; }
+		It end() const { return end_; }
 
 	private:
-		Iterator begin, end;
+		It begin_;
+		It end_;
 	};
 
 	template <typename T, unsigned Dim, unsigned Scale>
 	struct DataTable final {
-		DataTable(Bounds<Dim> bounds): bounds(bounds), data(bounds.size()*Scale ) { }
+		DataTable(Bounds<Dim> const &bounds): bounds(bounds), data(bounds.size()*Scale ) { }
+
+		Bounds<Dim> const &get_bounds() const { return bounds; }
 
 		Range<std::vector<T>::const_iterator> operator[](Index<Dim> const &idx) const {
-			auto offset = bounds.scalar_index(idx);
-			return { data.cbegin() + offset*Scale, data.cbegin() + (offset + 1)*Scale };
+			return (*this)[bounds.scalar_index(idx)];
 		}
 
 		Range<std::vector<T>::iterator> operator[](Index<Dim> const &idx) {
-			auto offset = bounds.scalar_index(idx);
-			return { data.begin() + offset, data.begin() + offset + Scale };
+			return (*this)[bounds.scalar_index(idx)];
 		}
 
 		Range<std::vector<T>::const_iterator> operator[](size_t scalar_index) const {
