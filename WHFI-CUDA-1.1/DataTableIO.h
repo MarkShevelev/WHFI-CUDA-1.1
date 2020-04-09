@@ -15,8 +15,8 @@ std::ostream &operator<<(std::ostream &ascii_out, iki::Range<It> range) {
 
 template <typename T, unsigned Dim, unsigned Scale>
 std::ostream &operator<<(std::ostream &ascii_out, iki::DataTable<T, Dim, Scale> const &table) {
-	auto vector_idx = table.get_bounds().first();
-	for (size_t scalar_idx = 0; scalar_idx != table.get_bounds().size(); ++scalar_idx, table.get_bounds().next(vector_idx)) {
+	auto vector_idx = first(table.get_bounds());
+	for (size_t scalar_idx = 0; scalar_idx != size(table.get_bounds()); ++scalar_idx, next(vector_idx,table.get_bounds())) {
 		ascii_out << vector_idx << ' ' << table[scalar_idx] << '\n';
 	}
 	return ascii_out;
@@ -25,27 +25,27 @@ std::ostream &operator<<(std::ostream &ascii_out, iki::DataTable<T, Dim, Scale> 
 namespace iki {
 	//binary
 	template <unsigned Dim>
-	std::ostream& write_binary(std::ostream &binary_out, iki::Bounds<Dim> const &bounds) {
+	std::ostream& write_binary(std::ostream &binary_os, iki::Bounds<Dim> const &bounds) {
 		for (unsigned d = 0; d != Dim; ++d) {
 			size_t bound = bounds[d];
-			binary_out.write(reinterpret_cast<char const *>(&bound), sizeof(bound));
+			binary_os.write(reinterpret_cast<char const *>(&bound), sizeof(bound));
 		}
-		return binary_out;
+		return binary_os;
 	}
 
 	template <typename T, unsigned Dim, unsigned Scale>
-	std::ostream& write_binary(std::ostream &binary_out, iki::DataTable<T, Dim, Scale> const &table) {
-		write_binary(binary_out, table.get_bounds())
-			.write(reinterpret_cast<char const *>(table.raw_data()), sizeof(T) * table.get_bounds().size() * Scale);
-		return binary_out;
+	std::ostream& write_binary(std::ostream &binary_os, iki::DataTable<T, Dim, Scale> const &table) {
+		write_binary(binary_os, table.get_bounds())
+			.write(reinterpret_cast<char const *>(table.raw_data()), sizeof(T) * size(table.get_bounds()) * Scale);
+		return binary_os;
 	}
 
 	template <unsigned Dim>
-	std::istream &read_binary(std::istream &binary_in, iki::Bounds<Dim> &bounds) {
+	std::istream &read_binary(std::istream &binary_is, iki::Bounds<Dim> &bounds) {
 		for (unsigned d = 0; d != Dim; ++d) {
-			binary_in.read(reinterpret_cast<char*>(&bounds[d]), sizeof(bounds[d]));
+			binary_is.read(reinterpret_cast<char*>(&bounds[d]), sizeof(bounds[d]));
 		}
-		return binary_in;
+		return binary_is;
 	}
 
 	template <typename T, unsigned Dim, unsigned Scale>
@@ -53,7 +53,7 @@ namespace iki {
 		Bounds<Dim> bounds;
 		read_binary(binary_in, bounds);
 		table.set_bounds(bounds);
-		binary_in.read(reinterpret_cast<char *>(table.raw_data()), sizeof(T) * table.get_bounds().size() * Scale);
+		binary_in.read(reinterpret_cast<char *>(table.raw_data()), sizeof(T) * size(table.get_bounds()) * Scale);
 		return binary_in;
 	}
 }/*iki*/
