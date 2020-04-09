@@ -21,13 +21,13 @@ namespace iki {
 			std::copy(src.components.begin(), src.components.end(), components.begin());
 		}
 
-		Bounds<Dim> &operator=(Bounds<Dim> const &src) {
-			std::copy(src.begin(), src.end(), components.begin());
+		Bounds<Dim>& operator=(Bounds<Dim> const &src) {
+			std::copy(src.components.begin(), src.components.end(), components.begin());
 			return *this;
 		}
 
-		Bounds<Dim> &operator=(Bounds<Dim> &&src) {
-			std::copy(src.begin(), src.end(), components.begin());
+		Bounds<Dim>& operator=(Bounds<Dim> &&src) {
+			std::copy(src.components.begin(), src.components.end(), components.begin());
 			return *this;
 		}
 
