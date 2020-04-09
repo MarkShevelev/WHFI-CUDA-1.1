@@ -43,15 +43,17 @@ namespace iki {
 	template <unsigned Dim>
 	std::istream &read_binary(std::istream &binary_in, iki::Bounds<Dim> &bounds) {
 		for (unsigned d = 0; d != Dim; ++d) {
-			binary_out.read(reinterpret_cast<char*>(&bounds[d]), sizeof(bound[d]));
+			binary_in.read(reinterpret_cast<char*>(&bounds[d]), sizeof(bounds[d]));
 		}
 		return binary_in;
 	}
 
 	template <typename T, unsigned Dim, unsigned Scale>
-	std::istream &write_binary(std::istream &binary_in, iki::DataTable<T, Dim, Scale> &table) {
-		read_binary(binary_in, table.get_bounds())
-			.read(reinterpret_cast<char *>(table.raw_data()), sizeof(T) * table.get_bounds().size() * Scale);
+	std::istream &read_binary(std::istream &binary_in, iki::DataTable<T, Dim, Scale> &table) {
+		Bounds<Dim> bounds;
+		read_binary(binary_in, bounds);
+		table.set_bounds(bounds);
+		binary_in.read(reinterpret_cast<char *>(table.raw_data()), sizeof(T) * table.get_bounds().size() * Scale);
 		return binary_in;
 	}
 }/*iki*/
