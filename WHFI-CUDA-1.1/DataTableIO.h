@@ -26,15 +26,17 @@ namespace iki {
 	//binary
 	template <unsigned Dim>
 	std::ostream& write_binary(std::ostream &binary_out, iki::Bounds<Dim> const &bounds) {
-		for (unsigned d = 0; d != Dim; ++d)
-			binary_out.write(reinterpret_cast<char const *>(&bounds[d], sizeof(bounds[d]));
+		for (unsigned d = 0; d != Dim; ++d) {
+			size_t bound = bounds[d];
+			binary_out.write(reinterpret_cast<char const *>(&bound), sizeof(bound));
+		}
 		return binary_out;
 	}
 
 	template <typename T, unsigned Dim, unsigned Scale>
 	std::ostream& write_binary(std::ostream &binary_out, iki::DataTable<T, Dim, Scale> const &table) {
 		write_binary(binary_out, table.get_bounds())
-			.write(binary_out, reinterpret_cast<char const *>(table.raw_data(), sizeof(T) * table.get_bounds().size() * Scale));
+			.write(reinterpret_cast<char const *>(table.raw_data()), sizeof(T) * table.get_bounds().size() * Scale);
 		return binary_out;
 	}
 

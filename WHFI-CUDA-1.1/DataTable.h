@@ -24,7 +24,8 @@ namespace iki {
 	struct DataTable final {
 		DataTable(Bounds<Dim> const &bounds): bounds(bounds), data(bounds.size()*Scale ) { }
 
-		Bounds<Dim> const &get_bounds() const { return bounds; }
+		Bounds<Dim> const& get_bounds() const { return bounds; }
+		Bounds<Dim>& get_bounds() { return bounds; }
 
 		Range<typename std::vector<T>::const_iterator> operator[](Index<Dim> const &idx) const {
 			return (*this)[bounds.scalar_index(idx)];
@@ -51,7 +52,7 @@ namespace iki {
 		}
 
 	private:
-		Bounds<Dim> const bounds;
+		Bounds<Dim> bounds;
 		std::vector<T> data;
 	};
 }
