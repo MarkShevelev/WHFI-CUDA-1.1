@@ -33,8 +33,8 @@ namespace iki {
 			return *this;
 		}
 
-		size_t operator[](unsigned d) const { return componets[d]; }
-		size_t &operator[](unsigned d) { return componets[d]; }
+		size_t operator[](unsigned d) const { return components[d]; }
+		size_t &operator[](unsigned d) { return components[d]; }
 
 	private:
 		std::array<size_t, Dim> components;
