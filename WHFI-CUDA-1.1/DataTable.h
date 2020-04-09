@@ -46,6 +46,10 @@ namespace iki {
 			return data.data();
 		}
 
+		T const *raw_data() const {
+			return data.data();
+		}
+
 	private:
 		Bounds<Dim> const bounds;
 		std::vector<T> data;

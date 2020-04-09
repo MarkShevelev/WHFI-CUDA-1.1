@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DataTable.h"
+#include "IndexIO.h"
 
 #include <iostream>
 #include <algorithm>
@@ -22,5 +23,20 @@ std::ostream &operator<<(std::ostream &ascii_out, iki::DataTable<T, Dim, Scale> 
 }
 
 namespace iki {
+	//binary
+	template <unsigned Dim>
+	std::ostream& write_binary(std::ostream &binary_out, iki::Bounds<Dim> const &bounds) {
+		for (unsigned d = 0; d != Dim; ++d)
+			binary_out.write(reinterpret_cast<char const *>(&bounds[d], sizeof(bounds[d]));
+		return binary_out;
+	}
+
+	template <typename T, unsigned Dim, unsigned Scale>
+	std::ostream& write_binary(std::ostream &binary_out, iki::DataTable<T, Dim, Scale> const &table) {
+		write_binary(binary_out, table.get_bounds())
+			.write(binary_out, reinterpret_cast<char const *>(table.raw_data(), sizeof(T) * table.get_bounds().size() * Scale));
+		return binary_out;
+	}
+
 
 }/*iki*/
