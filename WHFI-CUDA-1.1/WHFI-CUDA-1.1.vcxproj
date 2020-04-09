@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="Bounds.h" />
     <ClInclude Include="DataTable.h" />
+    <ClInclude Include="DataTableIO.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="DeviceError.h" />
     <ClInclude Include="DeviceMemory.h" />
