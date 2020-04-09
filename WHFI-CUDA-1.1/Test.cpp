@@ -9,7 +9,7 @@ int main() {
 	DataTable<char, 2u, 1u> vdf_table(iki::Bounds<2u>({ 10,10 }));
 	//TO DO: get_bounds()
 
-	iki::Bounds<2u> bounds = { 10,10 };
+	auto &bounds = vdf_table.get_bounds();
 	auto idx = bounds.first();
 	for (size_t scalar_idx = 0; scalar_idx != bounds.size(); ++scalar_idx) {
 		*vdf_table[scalar_idx].begin() = 'a' + idx[0];
