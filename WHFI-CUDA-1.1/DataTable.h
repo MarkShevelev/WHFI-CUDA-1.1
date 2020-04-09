@@ -35,11 +35,11 @@ namespace iki {
 		}
 
 		Range<typename  std::vector<T>::const_iterator> operator[](size_t scalar_index) const {
-			return Range{ data.cbegin() + scalar_index * Scale, data.cbegin() + (scalar_index + 1) * Scale };
+			return { data.cbegin() + scalar_index * Scale, data.cbegin() + (scalar_index + 1) * Scale };
 		}
 
 		Range<typename  std::vector<T>::iterator> operator[](size_t scalar_index) {
-			return Range{ data.cbegin() + scalar_index * Scale, data.cbegin() + (scalar_index + 1) * Scale };
+			return { data.cbegin() + scalar_index * Scale, data.cbegin() + (scalar_index + 1) * Scale };
 		}
 
 		T *raw_data() {
