@@ -10,7 +10,7 @@ namespace iki { namespace table {
 
 	template <unsigned Dim>
 	size_t scalar_product(Index<Dim> const &lha, Index<Dim> const &rha) {
-		return std::inner_product(lha.begin(), lha.end(), rha.begin(), 0u);
+		return std::inner_product(lha.begin(), lha.end(), rha.begin(), (size_t)0);
 	}
 
 	template <unsigned Dim>
@@ -18,7 +18,7 @@ namespace iki { namespace table {
 
 	template <unsigned Dim>
 	size_t index_volume(Bounds<Dim> const &bounds) {
-		return std::accumulate(bounds.begin(), bounds.end(), 1u, [] (auto lha, auto rha) { return lha * rha; });
+		return std::accumulate(bounds.begin(), bounds.end(), (size_t)1, [] (auto lha, auto rha) { return lha * rha; });
 	}
 
 	template <unsigned Dim>
