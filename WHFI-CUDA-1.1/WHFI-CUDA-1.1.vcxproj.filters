@@ -48,19 +48,16 @@
     <ClInclude Include="Index.h">
       <Filter>Table</Filter>
     </ClInclude>
-    <ClInclude Include="Bounds.h">
-      <Filter>Table</Filter>
-    </ClInclude>
     <ClInclude Include="DataTableIO.h">
       <Filter>Table</Filter>
     </ClInclude>
     <ClInclude Include="IndexIO.h">
       <Filter>Table</Filter>
     </ClInclude>
-    <ClInclude Include="UniformSpace.h">
+    <ClInclude Include="UniformGrid.h">
       <Filter>Table</Filter>
     </ClInclude>
-    <ClInclude Include="UniformGrid.h">
+    <ClInclude Include="UniformGridIO.h">
       <Filter>Table</Filter>
     </ClInclude>
   </ItemGroup>
