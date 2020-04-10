@@ -60,6 +60,9 @@
     <ClInclude Include="UniformGridIO.h">
       <Filter>Table</Filter>
     </ClInclude>
+    <ClInclude Include="DataTableDeviceHelper.h">
+      <Filter>DeviceHelper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">

@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataTable.h" />
+    <ClInclude Include="DataTableDeviceHelper.h" />
     <ClInclude Include="DataTableIO.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="DeviceError.h" />
