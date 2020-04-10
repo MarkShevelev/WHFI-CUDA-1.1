@@ -26,7 +26,7 @@ namespace iki { namespace table {
 	template <typename T, unsigned Dim, unsigned Scale>
 	std::ostream& write_binary(std::ostream &binary_os, DataTable<T, Dim, Scale> const &table) {
 		write_binary(binary_os, table.get_bounds())
-			.write(reinterpret_cast<char const *>(table.raw_data()), sizeof(T) * size(table.get_bounds()) * Scale);
+			.write(reinterpret_cast<char const *>(table.raw_data()), sizeof(T) * index_volume(table.get_bounds()) * Scale);
 		return binary_os;
 	}
 
@@ -35,7 +35,7 @@ namespace iki { namespace table {
 		Bounds<Dim> bounds;
 		read_binary(binary_in, bounds);
 		table.set_bounds(bounds);
-		binary_in.read(reinterpret_cast<char *>(table.raw_data()), sizeof(T) * size(table.get_bounds()) * Scale);
+		binary_in.read(reinterpret_cast<char *>(table.raw_data()), sizeof(T) * index_volume(table.get_bounds()) * Scale);
 		return binary_in;
 	}
 }/*talbe*/ }/*iki*/
