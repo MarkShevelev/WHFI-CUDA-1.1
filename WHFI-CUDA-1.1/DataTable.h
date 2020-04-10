@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Index.h"
-#include "Bounds.h"
 
 #include <iterator>
 #include <vector>
