@@ -19,7 +19,7 @@ namespace iki { namespace grid {
 	template <typename T, unsigned Dim>
 	Argument<T,Dim> make_argument(table::Index<Dim> const &vector_idx, UniformSpace<T,Dim> const &space) {
 		Argument<T, Dim> vector_argument;
-		std::transform(vector_idx.begin(), vector_idx.end(), space.begin(), space.end(), vector_argument.begin(), [] (auto idx, auto axis) { return axis.begin + axis.step * idx; });
+		std::transform(vector_idx.begin(), vector_idx.end(), space.begin(), vector_argument.begin(), [] (auto idx, auto axis) { return axis.begin + axis.step * idx; });
 		return vector_argument;
 	}
 
