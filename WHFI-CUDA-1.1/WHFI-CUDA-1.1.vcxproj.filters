@@ -22,6 +22,9 @@
     <Filter Include="Table">
       <UniqueIdentifier>{41a5b561-e97c-479f-9e97-05e0e440d4fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Diffusion\Device">
+      <UniqueIdentifier>{d0ce2ba6-e8a8-4e44-b93f-81a0b99045d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep.cuh">
@@ -62,6 +65,9 @@
     </ClInclude>
     <ClInclude Include="DataTableDeviceHelper.h">
       <Filter>DeviceHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="two_dimensional_diffusion_step.cuh">
+      <Filter>Diffusion\Device</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
