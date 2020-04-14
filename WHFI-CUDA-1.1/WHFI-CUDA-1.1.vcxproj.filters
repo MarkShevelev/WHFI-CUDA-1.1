@@ -25,6 +25,12 @@
     <Filter Include="Diffusion\Device">
       <UniqueIdentifier>{d0ce2ba6-e8a8-4e44-b93f-81a0b99045d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Diffusion\Device\SingleThread">
+      <UniqueIdentifier>{568c8044-5f59-407b-8c7d-276bb31c3f36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Diffusion\Device\Kernel">
+      <UniqueIdentifier>{24f0a508-c68c-4b77-aa60-a04566854cc8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep.cuh">
@@ -66,7 +72,14 @@
     <ClInclude Include="DataTableDeviceHelper.h">
       <Filter>DeviceHelper</Filter>
     </ClInclude>
-    <ClInclude Include="two_dimensional_diffusion_step.cuh">
+    <ClInclude Include="OneDimensionalMultithreadDiffusion.cuh" />
+    <ClInclude Include="diagonal_discretization.cuh">
+      <Filter>Diffusion\Device\SingleThread</Filter>
+    </ClInclude>
+    <ClInclude Include="forward_step_matrix_calculation_kernel.cuh">
+      <Filter>Diffusion\Device\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="forward_diffusion_step.cuh">
       <Filter>Diffusion\Device</Filter>
     </ClInclude>
   </ItemGroup>

@@ -17,6 +17,7 @@
     <ClInclude Include="Device.h" />
     <ClInclude Include="DeviceError.h" />
     <ClInclude Include="DeviceMemory.h" />
+    <ClInclude Include="diagonal_discretization.cuh" />
     <ClInclude Include="forward_step_matrix_calculation_kernel.cuh" />
     <ClInclude Include="OneDimensionalMultithreadDiffusion.cuh" />
     <ClInclude Include="Index.h" />
@@ -24,7 +25,7 @@
     <ClInclude Include="thomson_sweep.cuh" />
     <ClInclude Include="thomson_sweep_kernel.cuh" />
     <ClInclude Include="transpose.cuh" />
-    <ClInclude Include="two_dimensional_diffusion_step.cuh" />
+    <ClInclude Include="forward_diffusion_step.cuh" />
     <ClInclude Include="UniformGrid.h" />
     <ClInclude Include="UniformGridIO.h" />
   </ItemGroup>
