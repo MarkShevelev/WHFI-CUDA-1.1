@@ -40,6 +40,7 @@ int main() {
 		device::to_device(x_next, v_field.table);
 
 		diffusion::OneDimensionalMultithreadDiffusion<32u,512u,float> diffusion_solver(1.f, row_size, row_count, x_next, x_prev, dfc, a, b, c, d);
+		diffusion_solver.step();
 
 	}
 	catch (exception &ex) {
