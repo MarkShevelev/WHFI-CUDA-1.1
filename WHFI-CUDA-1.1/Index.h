@@ -50,7 +50,7 @@ namespace iki { namespace table {
 	Index<Dim> vector_index(size_t scalar_index, Bounds<Dim> const &bounds) {
 		Index<Dim> result;
 		std::transform(bounds.begin(), bounds.end(), result.begin(), [&scalar_index] (auto bound) { auto idx = scalar_index % bound; scalar_index /= bound; return idx; });
-		return
+		return result;
 	}
 
 	template <unsigned Dim>
