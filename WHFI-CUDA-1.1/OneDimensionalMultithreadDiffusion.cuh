@@ -14,7 +14,7 @@ namespace iki { namespace diffusion {
 
 		OneDimensionalMultithreadDiffusion& step() {
 			dim3 blockDim(TILE_SIZE, TILE_SIZE), gridDim(row_count / TILE_SIZE, row_size / TILE_SIZE);
-			device::forward_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim >>>(r, x_prev, dfc, a, b, c, d, row_size, row_count);
+			device::forward_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim >>>(a, b, c, d, x_prev, dfc, r, dfc, r, row_size, row_count);
 			cudaDeviceSynchronize();
 
 			math::device::thomson_sweep_kernel<<<row_count/THREAD_COUNT, THREAD_COUNT>>>(a + row_count, b + row_count, c + row_count, d + row_count, x_next + row_count, row_size-2, row_count);
