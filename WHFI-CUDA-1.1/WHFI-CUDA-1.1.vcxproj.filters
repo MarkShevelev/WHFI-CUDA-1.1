@@ -82,6 +82,7 @@
     <ClInclude Include="forward_diffusion_step.cuh">
       <Filter>Diffusion\Device</Filter>
     </ClInclude>
+    <ClInclude Include="TwoDimensionalMultithreadDiffusion.cuh" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">
