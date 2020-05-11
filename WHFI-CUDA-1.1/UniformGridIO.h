@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DataTableIO.h"
 #include "UniformGrid.h"
 
 #include <iostream>
@@ -15,7 +16,7 @@ template <typename T, unsigned Dim, unsigned Scale>
 std::ostream &operator<<(std::ostream &ascii_os, iki::grid::UniformGrid<T, Dim, Scale> const &grid) {
 	auto vector_idx = iki::table::begin_index(grid.table.get_bounds());
 	for (size_t scalar_idx = 0; scalar_idx != iki::table::index_volume(grid.table.get_bounds()); ++scalar_idx, iki::table::next_index(vector_idx, grid.table.get_bounds())) {
-		ascii_os << iki::grid::make_argument(vector_idx,grid.space) << ' ' << grid.table[scalar_idx] << '\n';
+		ascii_os << iki::grid::make_argument(vector_idx, grid.space) << ' ' << grid.table[scalar_idx] << '\n';
 	}
 	return ascii_os;
 }

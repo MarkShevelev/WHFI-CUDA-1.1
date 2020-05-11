@@ -5,6 +5,7 @@
 
 #include <cuda_runtime.h>
 #include <algorithm>
+#include <iostream>
 
 namespace iki { namespace diffusion {
 	template <unsigned TILE_SIZE, unsigned THREAD_COUNT, typename T>

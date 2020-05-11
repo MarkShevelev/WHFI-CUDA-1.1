@@ -64,7 +64,7 @@ namespace iki { namespace table {
 				end = false;
 				break;
 			}
-		return end ? end_index(bounds) : idx;
+		return end ? (idx = end_index(bounds)) : idx;
 	}
 
 	template <unsigned Dim>

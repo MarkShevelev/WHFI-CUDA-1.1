@@ -18,7 +18,7 @@ namespace iki { namespace diffusion{ namespace device {
 		b[idx] = T(1) + 0.5 * along_r * (along_dfc[idx - row_count] + along_dfc[idx]);
 		c[idx] = -0.5 * along_r * along_dfc[idx];
 		d[idx] = x_curr[idx]
-			+ 0.5 * along_r * diagonal_discretization(x_curr, along_dfc, idx, row_count)
-			+ along_r * diagonal_discretization(x_curr, perp_dfc, idx, 1);
+			+ 0.5 * along_r * diagonal_discretization(x_curr, along_dfc, idx, row_count);
+			+ perp_r * diagonal_discretization(x_curr, perp_dfc, idx, 1);
 	}
 }/*device*/ }/*diffusion*/ }/*iki*/
