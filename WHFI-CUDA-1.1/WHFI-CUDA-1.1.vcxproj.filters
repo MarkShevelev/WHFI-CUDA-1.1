@@ -72,7 +72,6 @@
     <ClInclude Include="DataTableDeviceHelper.h">
       <Filter>DeviceHelper</Filter>
     </ClInclude>
-    <ClInclude Include="OneDimensionalMultithreadDiffusion.cuh" />
     <ClInclude Include="diagonal_discretization.cuh">
       <Filter>Diffusion\Device\SingleThread</Filter>
     </ClInclude>
@@ -83,6 +82,12 @@
       <Filter>Diffusion\Device</Filter>
     </ClInclude>
     <ClInclude Include="TwoDimensionalMultithreadDiffusion.cuh" />
+    <ClInclude Include="cycle_grid_transpose.cuh">
+      <Filter>Math\Device\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="correction_forward_step_matrix_calculation_kernel.cuh">
+      <Filter>Diffusion\Device\Kernel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">
