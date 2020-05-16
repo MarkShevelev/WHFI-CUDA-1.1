@@ -78,12 +78,17 @@ void v_field_init(iki::grid::UniformGrid<float, 2u, 1u> &v_field) {
 	auto &table = v_field.table;
 	auto &bounds = table.get_bounds();
 
-	for (unsigned elm_idx = 0; elm_idx != bounds[1]; ++elm_idx) {
+	for (unsigned elm_idx = 0; elm_idx != bounds[1] - 1; ++elm_idx) {
 		float val = std::sin(2.f * 3.1415926535f / 128 * elm_idx);
-		for (unsigned row_idx = 0; row_idx != bounds[0]; ++row_idx)
-			*(table[row_idx + elm_idx * bounds[0]].begin()) = val;
+		for (unsigned row_idx = 0; row_idx != bounds[0] - 1; ++row_idx)
+			*(table[row_idx + elm_idx * bounds[0]].begin()) = val * std::sin(2.f * 3.1415926535f / 128 * row_idx);
 	}
 
+	for (unsigned elm_idx = 0; elm_idx != bounds[1]; ++elm_idx)
+		*(table[bounds[0] - 1 + elm_idx * bounds[0]].begin()) = 0.f;
+
+	for (unsigned row_idx = 0; row_idx != bounds[0]; ++row_idx)
+		*(table[row_idx + (bounds[1] - 1) * bounds[0]].begin()) = 0.f;
 }
 
 void along_dfc_field_init(iki::grid::UniformGrid<float, 2u, 1u> &dfc_field) {
@@ -99,7 +104,7 @@ void perp_dfc_field_init(iki::grid::UniformGrid<float, 2u, 1u> &dfc_field) {
 	auto &table = dfc_field.table;
 	auto &bounds = table.get_bounds();
 
-	for (unsigned row_idx = 1; row_idx != bounds[0] - 2; ++row_idx)
-		for (unsigned elm_idx = 1; elm_idx != bounds[1] - 2; ++elm_idx)
+	for (unsigned row_idx = 0; row_idx != bounds[0]; ++row_idx)
+		for (unsigned elm_idx = 0; elm_idx != bounds[1]; ++elm_idx)
 			*(table[row_idx + elm_idx * bounds[0]].begin()) = 1.f;
 }
