@@ -31,6 +31,9 @@
     <Filter Include="Diffusion\Device\Kernel">
       <UniqueIdentifier>{24f0a508-c68c-4b77-aa60-a04566854cc8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NewTable">
+      <UniqueIdentifier>{cf5c7366-7aa0-437e-a76c-3cc932a1850d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep.cuh">
@@ -87,6 +90,21 @@
     </ClInclude>
     <ClInclude Include="correction_forward_step_matrix_calculation_kernel.cuh">
       <Filter>Diffusion\Device\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="HostTable.h">
+      <Filter>NewTable</Filter>
+    </ClInclude>
+    <ClInclude Include="HostGrid.h">
+      <Filter>NewTable</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceTable.cuh">
+      <Filter>NewTable</Filter>
+    </ClInclude>
+    <ClInclude Include="HostGridIO.h">
+      <Filter>NewTable</Filter>
+    </ClInclude>
+    <ClInclude Include="HostManagedDeviceTable.cuh">
+      <Filter>NewTable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

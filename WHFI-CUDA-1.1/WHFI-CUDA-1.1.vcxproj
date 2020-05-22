@@ -19,8 +19,13 @@
     <ClInclude Include="Device.h" />
     <ClInclude Include="DeviceError.h" />
     <ClInclude Include="DeviceMemory.h" />
+    <ClInclude Include="DeviceTable.cuh" />
     <ClInclude Include="diagonal_discretization.cuh" />
     <ClInclude Include="forward_step_matrix_calculation_kernel.cuh" />
+    <ClInclude Include="HostGrid.h" />
+    <ClInclude Include="HostGridIO.h" />
+    <ClInclude Include="HostManagedDeviceTable.cuh" />
+    <ClInclude Include="HostTable.h" />
     <ClInclude Include="Index.h" />
     <ClInclude Include="IndexIO.h" />
     <ClInclude Include="thomson_sweep.cuh" />
