@@ -20,6 +20,10 @@ namespace iki { namespace table {
 			return hData[row_idx + elm_idx * row_count];
 		}
 
+		unsigned full_size() const {
+			return row_count * row_size;
+		}
+
 		HostTable& swap_sizes() {
 			std::swap(row_count, row_size);
 			return *this;

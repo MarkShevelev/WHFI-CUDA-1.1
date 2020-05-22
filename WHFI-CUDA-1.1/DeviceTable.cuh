@@ -13,6 +13,10 @@ namespace iki { namespace table {
 			return dData[row_idx + elm_idx * row_count];
 		}
 
+		__device__ unsigned full_size() const {
+			return row_count * row_size;
+		}
+
 		unsigned row_count, row_size;
 		T *dData;
 	};
