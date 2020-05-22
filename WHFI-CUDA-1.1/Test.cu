@@ -5,13 +5,15 @@
 #include "UniformGrid.h"
 #include "UniformGridIO.h"
 #include "DataTableDeviceHelper.h"
+#include "HostGrid.h"
+#include "HostGridIO.h"
 
 #include <iostream>
 #include <fstream>
 
-void v_field_init(iki::grid::UniformGrid<float, 2u, 1u> &v_field);
-void along_dfc_field_init(iki::grid::UniformGrid<float, 2u, 1u> &dfc_field);
-void perp_dfc_field_init(iki::grid::UniformGrid<float, 2u, 1u> &dfc_field);
+void v_field_init(iki::grid::test::HostGrid<float> &vdf_grid);
+void along_dfc_field_init(iki::grid::test::HostGrid<float> &dfc_grid);
+void perp_dfc_field_init(iki::grid::test::HostGrid<float> &dfc_grid);
 
 int main() {
 	using namespace std;
@@ -19,24 +21,20 @@ int main() {
 	using namespace table;
 	using namespace grid;
 	try {
-		Bounds<2u> v_field_size = { 256, 512 };
-		UniformSpace<float, 2u> v_space = { Axis<float>{0., 1.e-3f}, Axis<float>{-15.f, 1.e-3f} };
+		unsigned vparall_size = 256, vperp_size = 512;
+		test::Space<float> v_space{ test::Axis<float>{ -15.f, 1.e-3f }, test::Axis<float>{ 0.f, 1.e-3f } };
+		test::Space<float> v_space_transposed{ test::Axis<float>{ 0.f, 1.e-3f }, test::Axis<float>{ -15.f, 1.e-3f } };
+		test::HostGrid<float> vdf_grid(v_space, vparall_size, vperp_size);
+		test::HostGrid<float> vperp_dfc_grid(v_space, vparall_size, vperp_size);
+		test::HostGrid<float> vparall_dfc_grid(v_space_transposed, vperp_size, vparall_size);
 
-		Bounds<2u> transposed_field_size = { v_field_size[1], v_field_size[0] };
-		UniformSpace<float, 2u> transposed_space = { Axis<float>{-15.f, 1.e-3f}, Axis<float>{0., 1.e-3f} };
-		
-		UniformGrid<float, 2u, 1u> v_field(v_space,v_field_size);
-		v_field_init(v_field);
-
-		UniformGrid<float, 2u, 1u> along_dfc_field(v_space, v_field_size);
-		along_dfc_field_init(along_dfc_field);
-
-		UniformGrid<float, 2u, 1u> perp_dfc_field(transposed_space,transposed_field_size);
-		perp_dfc_field_init(perp_dfc_field);
+		v_field_init(vdf_grid);
+		along_dfc_field_init(vperp_dfc_grid);
+		perp_dfc_field_init(vparall_dfc_grid);
 
 		Device device(0);
 
-		unsigned const row_size = v_field_size[1], row_count = v_field_size[0], field_size = row_size*row_count;
+		unsigned const row_count = vparall_size, row_size = vperp_size, field_size = row_size*row_count;
 		DeviceMemory dev_memory(field_size * 9 * sizeof(float));
 		float *x_prev = (float *)dev_memory;
 		float *x_next = x_prev + field_size;
@@ -47,23 +45,23 @@ int main() {
 		float *b = a + field_size;
 		float *c = b + field_size;
 		float *d = c + field_size;
-		
-		device::to_device(x_prev, v_field.table);
-		device::to_device(x_next, v_field.table);
-		device::to_device(along_dfc, along_dfc_field.table);
-		device::to_device(perp_dfc, perp_dfc_field.table);
+
+		cudaMemcpy(x_prev, vdf_grid.table.hData.data(), field_size * sizeof(float),cudaMemcpyHostToDevice);
+		cudaMemcpy(x_next, vdf_grid.table.hData.data(), field_size * sizeof(float), cudaMemcpyHostToDevice);
+		cudaMemcpy(along_dfc, vperp_dfc_grid.table.hData.data(), field_size * sizeof(float), cudaMemcpyHostToDevice);
+		cudaMemcpy(perp_dfc, vparall_dfc_grid.table.hData.data(), field_size * sizeof(float), cudaMemcpyHostToDevice);
 
 		diffusion::TwoDimensionalMultithreadDiffusion<32u, 256u, float> diffusion_solver(row_count, row_size, a, b, c, d, x_prev, x_next, x_tmp, along_dfc, 1.0f, perp_dfc, 1.0f);
 		for (unsigned iter_cnt = 0; iter_cnt != 1000; ++iter_cnt)
 			diffusion_solver.step();
 
-		device::from_device(v_field.table, diffusion_solver.x_prev);
+		cudaMemcpy(vdf_grid.table.hData.data(), x_prev, field_size * sizeof(float), cudaMemcpyDeviceToHost);
 		{
 			ofstream ascii_os;
 			ascii_os.exceptions(ios::badbit | ios::failbit);
 			ascii_os.precision(7); ascii_os.setf(ios::fixed, ios::floatfield);
 			ascii_os.open("./data/one-dimensional-sin-test.txt");
-			ascii_os << transposed_grid(v_field);
+			ascii_os << vdf_grid;
 		}
 
 	}
@@ -74,37 +72,34 @@ int main() {
 	return 0;
 }
 
-void v_field_init(iki::grid::UniformGrid<float, 2u, 1u> &v_field) {
-	auto &table = v_field.table;
-	auto &bounds = table.get_bounds();
+void v_field_init(iki::grid::test::HostGrid<float> &vdf_grid) {
+	auto &table = vdf_grid.table;
 
-	for (unsigned elm_idx = 0; elm_idx != bounds[1] - 1; ++elm_idx) {
-		float val = std::sin(2.f * 3.1415926535f / 128 * elm_idx);
-		for (unsigned row_idx = 0; row_idx != bounds[0] - 1; ++row_idx)
-			*(table[row_idx + elm_idx * bounds[0]].begin()) = val * std::sin(2.f * 3.1415926535f / 128 * row_idx);
+	for (unsigned prp_idx = 0; prp_idx != table.row_size; ++prp_idx) {
+		float val = std::sin(2.f * 3.1415926535f / 128 * prp_idx);
+		for (unsigned prl_idx = 0; prl_idx != table.row_count; ++prl_idx)
+			table(prl_idx, prp_idx) = val * std::sin(2.f * 3.1415926535f / 128 * prl_idx);
 	}
 
-	for (unsigned elm_idx = 0; elm_idx != bounds[1]; ++elm_idx)
-		*(table[bounds[0] - 1 + elm_idx * bounds[0]].begin()) = 0.f;
+	for (unsigned prp_idx = 0; prp_idx != table.row_size; ++prp_idx)
+		table(0, prp_idx) = table(table.row_count - 1, prp_idx) = 0.f;
 
-	for (unsigned row_idx = 0; row_idx != bounds[0]; ++row_idx)
-		*(table[row_idx + (bounds[1] - 1) * bounds[0]].begin()) = 0.f;
+	for (unsigned prl_idx = 0; prl_idx != table.row_count; ++prl_idx)
+		table(prl_idx,0) = table(prl_idx, table.row_size - 1) = 0.f;
 }
 
-void along_dfc_field_init(iki::grid::UniformGrid<float, 2u, 1u> &dfc_field) {
-	auto &table = dfc_field.table;
-	auto &bounds = table.get_bounds();
+void along_dfc_field_init(iki::grid::test::HostGrid<float> &dfc_grid) {
+	auto &table = dfc_grid.table;
 
-	for (unsigned row_idx = 0; row_idx != bounds[0]; ++row_idx)
-		for (unsigned elm_idx = 0; elm_idx != bounds[1]; ++elm_idx)
-			*(table[row_idx + elm_idx * bounds[0]].begin()) = 1.f;
+	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)
+		for (unsigned elm_idx = 0; elm_idx != table.row_size; ++elm_idx)
+			table(row_idx,elm_idx) = 1.f;
 }
 
-void perp_dfc_field_init(iki::grid::UniformGrid<float, 2u, 1u> &dfc_field) {
-	auto &table = dfc_field.table;
-	auto &bounds = table.get_bounds();
+void perp_dfc_field_init(iki::grid::test::HostGrid<float> &dfc_grid) {
+	auto &table = dfc_grid.table;
 
-	for (unsigned row_idx = 0; row_idx != bounds[0]; ++row_idx)
-		for (unsigned elm_idx = 0; elm_idx != bounds[1]; ++elm_idx)
-			*(table[row_idx + elm_idx * bounds[0]].begin()) = 1.f;
+	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)
+		for (unsigned elm_idx = 0; elm_idx != table.row_size; ++elm_idx)
+			table(row_idx, elm_idx) = 1.f;
 }
