@@ -3,6 +3,7 @@
 #include "HostTable.h"
 
 #include <array>
+#include <algorithm>
 
 namespace iki { namespace grid { namespace test {
 	template <typename T>
@@ -19,6 +20,12 @@ namespace iki { namespace grid { namespace test {
 		Argument<T> operator()(unsigned row_idx, unsigned elm_idx) const {
 			return { perp(row_idx), along(elm_idx) };
 		}
+
+		Space &swap_axes() {
+			std::swap(perp, along);
+			return *this;
+		}
+
 		Axis<T> perp, along;
 	};
 
