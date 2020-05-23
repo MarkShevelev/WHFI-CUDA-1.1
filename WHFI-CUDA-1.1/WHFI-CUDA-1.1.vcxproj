@@ -22,6 +22,7 @@
     <ClInclude Include="DeviceTable.cuh" />
     <ClInclude Include="diagonal_discretization.cuh" />
     <ClInclude Include="forward_step_matrix_calculation_kernel.cuh" />
+    <ClInclude Include="HostDeviceTransfer.cuh" />
     <ClInclude Include="HostGrid.h" />
     <ClInclude Include="HostGridIO.h" />
     <ClInclude Include="HostManagedDeviceTable.cuh" />
