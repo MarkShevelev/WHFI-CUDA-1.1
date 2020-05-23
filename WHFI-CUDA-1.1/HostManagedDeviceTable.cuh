@@ -5,7 +5,7 @@
 
 #include <cuda_runtime.h>
 
-namespace iki { namespace table {
+namespace iki { namespace table { namespace test {
 	template <typename T>
 	struct HostManagedDeviceTable {
 		HostManagedDeviceTable(unsigned row_count, unsigned row_size): dMemory(row_count * row_size * sizeof(T)) {
@@ -22,7 +22,19 @@ namespace iki { namespace table {
 			return *this;
 		}
 
+		unsigned full_size() const {
+			return dTable.row_count * dTable.row_size;
+		}
+
+		T *data() {
+			return (T *)dMemory.get_pointer();
+		}
+
+		T const *data() const {
+			return (T const *)dMemory.get_pointer();
+		}
+
 		DeviceTable<T> dTable;
 		DeviceMemory dMemory;
 	};
-}/*iki*/ }/*table*/
+}/*test*/ }/*iki*/ }/*table*/
