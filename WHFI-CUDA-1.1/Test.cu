@@ -1,12 +1,10 @@
 #include "TwoDimensionalMultithreadDiffusion.cuh"
 #include "Device.h"
 #include "DeviceMemory.h"
-#include "DataTable.h"
-#include "UniformGrid.h"
-#include "UniformGridIO.h"
-#include "DataTableDeviceHelper.h"
 #include "HostGrid.h"
 #include "HostGridIO.h"
+#include "HostManagedDeviceTable.cuh"
+#include "HostDeviceTransfer.cuh"
 
 #include <iostream>
 #include <fstream>
@@ -20,13 +18,15 @@ int main() {
 	using namespace iki;
 	using namespace table;
 	using namespace grid;
+	namespace gt = iki::grid::test;
+	namespace tt = iki::table::test;
 	try {
 		unsigned vparall_size = 256, vperp_size = 512;
-		test::Space<float> v_space{ test::Axis<float>{ -15.f, 1.e-3f }, test::Axis<float>{ 0.f, 1.e-3f } };
-		test::Space<float> v_space_transposed{ test::Axis<float>{ 0.f, 1.e-3f }, test::Axis<float>{ -15.f, 1.e-3f } };
-		test::HostGrid<float> vdf_grid(v_space, vparall_size, vperp_size);
-		test::HostGrid<float> vperp_dfc_grid(v_space, vparall_size, vperp_size);
-		test::HostGrid<float> vparall_dfc_grid(v_space_transposed, vperp_size, vparall_size);
+		gt::Space<float> v_space{ gt::Axis<float>{ -15.f, 1.e-3f }, gt::Axis<float>{ 0.f, 1.e-3f } };
+		gt::Space<float> v_space_transposed{ gt::Axis<float>{ 0.f, 1.e-3f }, gt::Axis<float>{ -15.f, 1.e-3f } };
+		gt::HostGrid<float> vdf_grid(v_space, vparall_size, vperp_size);
+		gt::HostGrid<float> vperp_dfc_grid(v_space, vparall_size, vperp_size);
+		gt::HostGrid<float> vparall_dfc_grid(v_space_transposed, vperp_size, vparall_size);
 
 		v_field_init(vdf_grid);
 		along_dfc_field_init(vperp_dfc_grid);
@@ -35,27 +35,19 @@ int main() {
 		Device device(0);
 
 		unsigned const row_count = vparall_size, row_size = vperp_size, field_size = row_size*row_count;
-		DeviceMemory dev_memory(field_size * 9 * sizeof(float));
-		float *x_prev = (float *)dev_memory;
-		float *x_next = x_prev + field_size;
-		float *x_tmp = x_next + field_size;
-		float *along_dfc = x_tmp + field_size;
-		float *perp_dfc = along_dfc + field_size;
-		float *a = perp_dfc + field_size;
-		float *b = a + field_size;
-		float *c = b + field_size;
-		float *d = c + field_size;
 
-		cudaMemcpy(x_prev, vdf_grid.table.hData.data(), field_size * sizeof(float),cudaMemcpyHostToDevice);
-		cudaMemcpy(x_next, vdf_grid.table.hData.data(), field_size * sizeof(float), cudaMemcpyHostToDevice);
-		cudaMemcpy(along_dfc, vperp_dfc_grid.table.hData.data(), field_size * sizeof(float), cudaMemcpyHostToDevice);
-		cudaMemcpy(perp_dfc, vparall_dfc_grid.table.hData.data(), field_size * sizeof(float), cudaMemcpyHostToDevice);
+		tt::HostManagedDeviceTable<float> x_prev_managed(vparall_size, vperp_size), x_next_managed(vparall_size, vperp_size), x_tmp_managed(vparall_size,vperp_size), vperp_dfc(vparall_size, vperp_size), vparall_dfc(vperp_size, vparall_size), a(vparall_size, vperp_size), b(vparall_size, vperp_size), c(vparall_size, vperp_size), d(vparall_size, vperp_size);
+		host_to_device_transfer(vdf_grid.table, x_prev_managed);
+		host_to_device_transfer(vdf_grid.table, x_next_managed);
+		host_to_device_transfer(vperp_dfc_grid.table, vperp_dfc);
+		host_to_device_transfer(vparall_dfc_grid.table, vparall_dfc);
 
-		diffusion::TwoDimensionalMultithreadDiffusion<32u, 256u, float> diffusion_solver(row_count, row_size, a, b, c, d, x_prev, x_next, x_tmp, along_dfc, 1.0f, perp_dfc, 1.0f);
+		diffusion::TwoDimensionalMultithreadDiffusion<32u, 256u, float> diffusion_solver(row_count, row_size, a.data(), b.data(), c.data(), d.data(), x_prev_managed.data(), x_next_managed.data(), x_tmp_managed.data(), vperp_dfc.data(), 1.0f, vparall_dfc.data(), 1.0f);
 		for (unsigned iter_cnt = 0; iter_cnt != 1000; ++iter_cnt)
 			diffusion_solver.step();
 
-		cudaMemcpy(vdf_grid.table.hData.data(), x_prev, field_size * sizeof(float), cudaMemcpyDeviceToHost);
+		cudaMemcpy(vdf_grid.table.hData.data(), diffusion_solver.x_prev, field_size * sizeof(float), cudaMemcpyDeviceToHost);
+
 		{
 			ofstream ascii_os;
 			ascii_os.exceptions(ios::badbit | ios::failbit);
