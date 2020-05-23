@@ -109,6 +109,15 @@
     <ClInclude Include="HostDeviceTransfer.cuh">
       <Filter>NewTable</Filter>
     </ClInclude>
+    <ClInclude Include="inplace_transpose.cuh">
+      <Filter>Math\Device\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="HostManagedDeviceTableTranspose.cuh">
+      <Filter>NewTable</Filter>
+    </ClInclude>
+    <ClInclude Include="HostTableTranspose.h">
+      <Filter>NewTable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">

@@ -27,8 +27,11 @@
     <ClInclude Include="HostGridIO.h" />
     <ClInclude Include="HostManagedDeviceTable.cuh" />
     <ClInclude Include="HostTable.h" />
+    <ClInclude Include="HostTableTranspose.h" />
     <ClInclude Include="Index.h" />
     <ClInclude Include="IndexIO.h" />
+    <ClInclude Include="inplace_transpose.cuh" />
+    <ClInclude Include="HostManagedDeviceTableTranspose.cuh" />
     <ClInclude Include="thomson_sweep.cuh" />
     <ClInclude Include="thomson_sweep_kernel.cuh" />
     <ClInclude Include="transpose.cuh" />
