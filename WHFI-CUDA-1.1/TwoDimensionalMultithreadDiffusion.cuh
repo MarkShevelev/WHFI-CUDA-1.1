@@ -4,6 +4,10 @@
 #include "cycle_grid_transpose.cuh"
 #include "forward_step_matrix_calculation_kernel.cuh"
 #include "correction_forward_step_matrix_calculation_kernel.cuh"
+#include "HostManagedDeviceTable.cuh"
+#include "HostTable.h"
+#include "HostDeviceTransfer.cuh"
+#include "HostManagedDeviceTableTranspose.cuh"
 
 #include <cuda_runtime.h>
 #include <algorithm>
@@ -11,36 +15,48 @@
 namespace iki {	namespace diffusion {
 	template <unsigned TILE_SIZE, unsigned THREAD_COUNT, typename T>
 	class TwoDimensionalMultithreadDiffusion final {
+		using Table = table::test::HostManagedDeviceTable<T>;
+		using HostTable = table::HostTable<T>;
 	public:
-		TwoDimensionalMultithreadDiffusion(unsigned row_count, unsigned row_size, T *a, T *b, T *c, T *d, T *x_prev, T *x_next, T *x_tmp, T *along_dfc, T along_r, T *perp_dfc, T perp_r ): row_count(row_count), row_size(row_size), a(a), b(b), c(c), d(d), x_prev(x_prev), x_next(x_next), x_tmp(x_tmp), along_dfc(along_dfc), perp_dfc(perp_dfc), along_r(along_r), perp_r(perp_r) { }
+		TwoDimensionalMultithreadDiffusion(
+			HostTable const &init_host, HostTable const &perp_dfc_host, T perp_r, HostTable const &along_dfc_host, T along_r): 
+			a(init_host.row_count, init_host.row_size), 
+			b(init_host.row_count, init_host.row_size), 
+			c(init_host.row_count, init_host.row_size), 
+			d(init_host.row_count, init_host.row_size), 
+			x_prev_transposed(init_host.row_size, init_host.row_count),
+			x_next_transposed(init_host.row_size, init_host.row_count),
+			x_prev(table::test::construct_from(init_host)), x_next(table::test::construct_from(init_host)),
+			perp_dfc(table::test::construct_from(perp_dfc_host)), along_dfc(table::test::construct_from(along_dfc_host)), 
+			perp_r(perp_r),	along_r(along_r) { }
 
 		TwoDimensionalMultithreadDiffusion& step() {
 			{
+				unsigned row_count = x_prev.dTable.row_count, row_size = x_prev.dTable.row_size;
+
 				dim3 blockDim(TILE_SIZE, TILE_SIZE), gridDim(row_count / TILE_SIZE, row_size / TILE_SIZE);
-				device::forward_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>> (row_count, row_size, a, b, c, d, x_prev, along_dfc, along_r, perp_dfc, perp_r);
+				device::forward_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>> (row_count, row_size, a.data(), b.data(), c.data(), d.data(), x_prev.data(), along_dfc.data(), along_r, perp_dfc.data(), perp_r);
 				cudaDeviceSynchronize();
 
-				math::device::thomson_sweep_kernel<<<row_count / THREAD_COUNT, THREAD_COUNT>>>(a + row_count, b + row_count, c + row_count, d + row_count, x_next + row_count, row_size - 2, row_count);
+				math::device::thomson_sweep_kernel<<<row_count / THREAD_COUNT, THREAD_COUNT>>>(a.data() + row_count, b.data() + row_count, c.data() + row_count, d.data() + row_count, x_next.data() + row_count, row_size - 2, row_count);
 				cudaDeviceSynchronize();
 
-				math::device::cycle_grids_transpose<TILE_SIZE, 8u>(x_prev, x_next, x_tmp, row_count, row_size);
-				std::swap(x_next, x_tmp);
-				std::swap(x_prev, x_tmp);
-				std::swap(row_count, row_size);
+				table::test::transpose(x_prev, x_prev_transposed);
+				table::test::transpose(x_next, x_next_transposed);
 			}
 
 			{
+				unsigned row_count = x_prev_transposed.dTable.row_count, row_size = x_prev_transposed.dTable.row_size;
+
 				dim3 blockDim(TILE_SIZE, TILE_SIZE), gridDim(row_count / TILE_SIZE, row_size / TILE_SIZE);
-				device::correction_forward_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>> (row_count, row_size, a, b, c, d, x_prev, x_next, perp_dfc, perp_r);
+				device::correction_forward_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>> (row_count, row_size, a.data(), b.data(), c.data(), d.data(), x_prev_transposed.data(), x_next_transposed.data(), perp_dfc.data(), perp_r);
 				cudaDeviceSynchronize();
 
-				math::device::thomson_sweep_kernel<<<row_count / THREAD_COUNT, THREAD_COUNT>>> (a + row_count, b + row_count, c + row_count, d + row_count, x_next + row_count, row_size - 2, row_count);
+				math::device::thomson_sweep_kernel<<<row_count / THREAD_COUNT, THREAD_COUNT>>> (a.data() + row_count, b.data() + row_count, c.data() + row_count, d.data() + row_count, x_next_transposed.data() + row_count, row_size - 2, row_count);
 				cudaDeviceSynchronize();
 
-				math::device::cycle_grids_transpose<TILE_SIZE, 8u>(x_prev, x_next, x_tmp, row_count, row_size);
-				std::swap(x_next, x_tmp);
-				std::swap(x_prev, x_tmp);
-				std::swap(row_count, row_size);
+				table::test::transpose(x_prev_transposed, x_prev);
+				table::test::transpose(x_next_transposed, x_next);
 			}
 
 			std::swap(x_prev, x_next);
@@ -48,8 +64,9 @@ namespace iki {	namespace diffusion {
 		}
 
 	public:
-		unsigned row_count, row_size;
-		T *a, *b, *c, *d, *x_prev, *x_next, *x_tmp, *along_dfc, *perp_dfc; //device memory pointers
-		T const along_r, perp_r;
+		Table a, b, c, d, x_prev_transposed, x_next_transposed;
+		Table x_prev, x_next;
+		Table perp_dfc, along_dfc;
+		T const perp_r,along_r;
 	};
 } /*diffusion*/ } /*iki*/
