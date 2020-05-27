@@ -35,7 +35,7 @@ int main() {
 
 		Device device(0);
 
-		unsigned const row_count = vparall_size, row_size = vperp_size, field_size = row_size*row_count;
+		unsigned const row_count = vparall_size, row_size = vperp_size;
 
 		diffusion::TwoDimensionalMultithreadDiffusion<32u, 256u, float> 
 			diffusion_solver(
@@ -48,9 +48,7 @@ int main() {
 			diffusion_solver.step();
 
 		{
-			gt::HostGrid<float> output_grid(v_space, vparall_size, vperp_size);
-			device_to_host_transfer(diffusion_solver.x_prev, output_grid.table);
-
+			gt::HostGrid<float> output_grid(v_space, tt::construct_from(diffusion_solver.x_prev));
 			ofstream ascii_os;
 			ascii_os.exceptions(ios::badbit | ios::failbit);
 			ascii_os.precision(7); ascii_os.setf(ios::fixed, ios::floatfield);

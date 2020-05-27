@@ -31,6 +31,7 @@ namespace iki { namespace grid { namespace test {
 
 	template <typename T>
 	struct HostGrid {
+		HostGrid(Space<T> space, table::HostTable<T> &&table): table(table), space(space) { }
 		HostGrid(Space<T> space, unsigned row_count, unsigned row_size) : table(row_count, row_size), space(space) { }
 
 		table::HostTable<T> table;

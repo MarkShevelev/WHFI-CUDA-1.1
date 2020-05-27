@@ -27,4 +27,11 @@ namespace iki { namespace table { namespace test {
 		host_to_device_transfer(host, device_table);
 		return device_table;
 	}
+
+	template <typename T>
+	HostTable<T> construct_from(HostManagedDeviceTable<T> const &device) {
+		HostTable<T> host_table(device.dTable.row_count, device.dTable.row_size);
+		device_to_host_transfer(device, host_table);
+		return host_table;
+	}
 }/*test*/ }/*table*/ }/*iki*/
