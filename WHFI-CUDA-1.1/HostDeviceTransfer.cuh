@@ -20,4 +20,11 @@ namespace iki { namespace table { namespace test {
 		if (cudaSuccess != cudaStatus)
 			throw DeviceError("Host to device data transfer failed: ", cudaStatus);
 	}
+
+	template <typename T>
+	HostManagedDeviceTable<T> construct_from(HostTable<T> const &host) {
+		HostManagedDeviceTable<T> device_table(host.row_count, host.row_size);
+		host_to_device_transfer(host, device_table);
+		return device_table;
+	}
 }/*test*/ }/*table*/ }/*iki*/
