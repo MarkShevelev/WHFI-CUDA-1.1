@@ -35,7 +35,7 @@ namespace iki {	namespace diffusion {
 				unsigned row_count = x_prev.dTable.row_count, row_size = x_prev.dTable.row_size;
 
 				dim3 blockDim(TILE_SIZE, TILE_SIZE), gridDim(row_count / TILE_SIZE, row_size / TILE_SIZE);
-				device::forward_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>> (row_count, row_size, a.data(), b.data(), c.data(), d.data(), x_prev.data(), along_dfc.data(), along_r, perp_dfc.data(), perp_r);
+				device::forward_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>> (a.dTable, b.dTable, c.dTable, d.dTable, x_prev.dTable, along_dfc.dTable, along_r, perp_dfc.dTable, perp_r);
 				cudaDeviceSynchronize();
 
 				math::device::thomson_sweep_kernel<<<row_count / THREAD_COUNT, THREAD_COUNT>>>(a.data() + row_count, b.data() + row_count, c.data() + row_count, d.data() + row_count, x_next.data() + row_count, row_size - 2, row_count);
