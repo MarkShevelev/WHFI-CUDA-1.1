@@ -37,32 +37,19 @@ int main() {
 
 		unsigned const row_count = vparall_size, row_size = vperp_size, field_size = row_size*row_count;
 
-		tt::HostManagedDeviceTable<float> 
-			x_prev_managed(vparall_size, vperp_size), 
-			x_next_managed(vparall_size, vperp_size), 
-			x_tmp_managed(vparall_size,vperp_size), 
-			vperp_dfc(vparall_size, vperp_size), 
-			vparall_dfc(vperp_size, vparall_size), 
-			a(vparall_size, vperp_size), 
-			b(vparall_size, vperp_size), 
-			c(vparall_size, vperp_size), 
-			d(vparall_size, vperp_size);
+		diffusion::TwoDimensionalMultithreadDiffusion<32u, 256u, float> 
+			diffusion_solver(
+				vdf_grid.table,
+				vparall_dfc_grid.table, 1.0f,
+				vperp_dfc_grid.table, 1.0f
+			);
 
-		host_to_device_transfer(vdf_grid.table, x_prev_managed);
-		host_to_device_transfer(vdf_grid.table, x_next_managed);
-		host_to_device_transfer(vperp_dfc_grid.table, vperp_dfc);
-		host_to_device_transfer(vparall_dfc_grid.table, vparall_dfc);
-
-		diffusion::TwoDimensionalMultithreadDiffusion<32u, 256u, float> diffusion_solver(row_count, row_size, a.data(), b.data(), c.data(), d.data(), x_prev_managed.data(), x_next_managed.data(), x_tmp_managed.data(), vperp_dfc.data(), 1.0f, vparall_dfc.data(), 1.0f);
 		for (unsigned iter_cnt = 0; iter_cnt != 1000; ++iter_cnt)
 			diffusion_solver.step();
 
-		cudaMemcpy(vdf_grid.table.hData.data(), diffusion_solver.x_prev, field_size * sizeof(float), cudaMemcpyDeviceToHost);
-
 		{
 			gt::HostGrid<float> output_grid(v_space, vparall_size, vperp_size);
-			tt::transpose(vdf_grid.table, output_grid.table);
-			output_grid.space.swap_axes();
+			device_to_host_transfer(diffusion_solver.x_prev, output_grid.table);
 
 			ofstream ascii_os;
 			ascii_os.exceptions(ios::badbit | ios::failbit);
