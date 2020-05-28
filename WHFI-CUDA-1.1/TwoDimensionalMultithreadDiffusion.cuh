@@ -28,32 +28,46 @@ namespace iki {	namespace diffusion {
 			x_next_transposed(init_host.row_size, init_host.row_count),
 			x_prev(table::test::construct_from(init_host)), x_next(table::test::construct_from(init_host)),
 			perp_dfc(table::test::construct_from(perp_dfc_host)), along_dfc(table::test::construct_from(along_dfc_host)), 
-			perp_r(perp_r),	along_r(along_r) { }
+			perp_r(perp_r),	along_r(along_r) {
+			cudaError_t cudaStatus;
+			if (cudaSuccess != (cudaStatus = cudaGetLastError()))
+				throw DeviceError("TwoDimensionalMultithreadDiffusion construction: ", cudaStatus);
+		}
 
 		TwoDimensionalMultithreadDiffusion& step() {
 			{
+				cudaError_t cudaStatus;
 				unsigned row_count = x_prev.dTable.row_count, row_size = x_prev.dTable.row_size;
 
 				dim3 blockDim(TILE_SIZE, TILE_SIZE), gridDim(row_count / TILE_SIZE, row_size / TILE_SIZE);
 				device::forward_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>> (a.dTable, b.dTable, c.dTable, d.dTable, x_prev.dTable, along_dfc.dTable, along_r, perp_dfc.dTable, perp_r);
 				cudaDeviceSynchronize();
+				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
+					throw DeviceError("Forward step matrix calculation kernel: ", cudaStatus);
 
 				math::device::thomson_sweep_kernel<<<row_count / THREAD_COUNT, THREAD_COUNT>>>(a.data() + row_count, b.data() + row_count, c.data() + row_count, d.data() + row_count, x_next.data() + row_count, row_size - 2, row_count);
 				cudaDeviceSynchronize();
+				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
+					throw DeviceError("Forward step Thomson sweep: ", cudaStatus);
 
 				table::test::transpose(x_prev, x_prev_transposed);
 				table::test::transpose(x_next, x_next_transposed);
 			}
 
 			{
+				cudaError_t cudaStatus;
 				unsigned row_count = x_prev_transposed.dTable.row_count, row_size = x_prev_transposed.dTable.row_size;
 
 				dim3 blockDim(TILE_SIZE, TILE_SIZE), gridDim(row_count / TILE_SIZE, row_size / TILE_SIZE);
 				device::correction_forward_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>> (row_count, row_size, a.data(), b.data(), c.data(), d.data(), x_prev_transposed.data(), x_next_transposed.data(), perp_dfc.data(), perp_r);
 				cudaDeviceSynchronize();
+				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
+					throw DeviceError("Correction step matrix calculation kernel: ", cudaStatus);
 
 				math::device::thomson_sweep_kernel<<<row_count / THREAD_COUNT, THREAD_COUNT>>> (a.data() + row_count, b.data() + row_count, c.data() + row_count, d.data() + row_count, x_next_transposed.data() + row_count, row_size - 2, row_count);
 				cudaDeviceSynchronize();
+				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
+					throw DeviceError("Correction step Thomson sweep kernel: ", cudaStatus);
 
 				table::test::transpose(x_prev_transposed, x_prev);
 				table::test::transpose(x_next_transposed, x_next);
