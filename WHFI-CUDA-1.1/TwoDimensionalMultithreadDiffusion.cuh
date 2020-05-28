@@ -52,6 +52,7 @@ namespace iki {	namespace diffusion {
 
 				table::test::transpose(x_prev, x_prev_transposed);
 				table::test::transpose(x_next, x_next_transposed);
+				a.swap_sizes(); b.swap_sizes(); c.swap_sizes(); d.swap_sizes();
 			}
 
 			{
@@ -59,7 +60,7 @@ namespace iki {	namespace diffusion {
 				unsigned row_count = x_prev_transposed.dTable.row_count, row_size = x_prev_transposed.dTable.row_size;
 
 				dim3 blockDim(TILE_SIZE, TILE_SIZE), gridDim(row_count / TILE_SIZE, row_size / TILE_SIZE);
-				device::correction_forward_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>> (row_count, row_size, a.data(), b.data(), c.data(), d.data(), x_prev_transposed.data(), x_next_transposed.data(), perp_dfc.data(), perp_r);
+				device::correction_forward_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>> (a.dTable, b.dTable, c.dTable, d.dTable, x_prev_transposed.dTable, x_next_transposed.dTable, perp_dfc.dTable, perp_r);
 				cudaDeviceSynchronize();
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Correction step matrix calculation kernel: ", cudaStatus);
@@ -71,6 +72,7 @@ namespace iki {	namespace diffusion {
 
 				table::test::transpose(x_prev_transposed, x_prev);
 				table::test::transpose(x_next_transposed, x_next);
+				a.swap_sizes(); b.swap_sizes(); c.swap_sizes(); d.swap_sizes();
 			}
 
 			std::swap(x_prev, x_next);
