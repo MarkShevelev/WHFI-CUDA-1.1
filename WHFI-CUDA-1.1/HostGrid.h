@@ -5,7 +5,7 @@
 #include <array>
 #include <algorithm>
 
-namespace iki { namespace grid { namespace test {
+namespace iki { namespace grid {
 	template <typename T>
 	struct Axis {
 		T operator()(unsigned idx) const { return begin + step * idx; }
@@ -37,4 +37,4 @@ namespace iki { namespace grid { namespace test {
 		table::HostTable<T> table;
 		Space<T> space;
 	};
-}/*test*/ }/*grid*/ }/*iki*/
+}/*grid*/ }/*iki*/

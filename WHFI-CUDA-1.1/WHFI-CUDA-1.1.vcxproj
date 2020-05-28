@@ -12,10 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="correction_forward_step_matrix_calculation_kernel.cuh" />
-    <ClInclude Include="cycle_grid_transpose.cuh" />
-    <ClInclude Include="DataTable.h" />
     <ClInclude Include="DataTableDeviceHelper.h" />
-    <ClInclude Include="DataTableIO.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="DeviceError.h" />
     <ClInclude Include="DeviceMemory.h" />
@@ -28,15 +25,10 @@
     <ClInclude Include="HostManagedDeviceTable.cuh" />
     <ClInclude Include="HostTable.h" />
     <ClInclude Include="HostTableTranspose.h" />
-    <ClInclude Include="Index.h" />
-    <ClInclude Include="IndexIO.h" />
-    <ClInclude Include="inplace_transpose.cuh" />
     <ClInclude Include="HostManagedDeviceTableTranspose.cuh" />
     <ClInclude Include="thomson_sweep_kernel.cuh" />
     <ClInclude Include="transpose.cuh" />
     <ClInclude Include="TwoDimensionalMultithreadDiffusion.cuh" />
-    <ClInclude Include="UniformGrid.h" />
-    <ClInclude Include="UniformGridIO.h" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="Device.cpp" />

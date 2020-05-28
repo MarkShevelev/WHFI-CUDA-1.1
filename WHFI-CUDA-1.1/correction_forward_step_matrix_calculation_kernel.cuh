@@ -9,9 +9,9 @@
 namespace iki { namespace diffusion { namespace device {
 	template <unsigned TILE_SIZE, typename T>
 	__global__ void  correction_forward_step_matrix_calculation_kernel(
-		table::DeviceTable<T> a, table::DeviceTable<T> b, table::DeviceTable<T> c, table::DeviceTable<T> d,
-		table::DeviceTable<T> const x_prev, table::DeviceTable<T> const x_next,
-		table::DeviceTable<T> const along_dfc, T along_r) {
+		table::device::DeviceTable<T> a, table::device::DeviceTable<T> b, table::device::DeviceTable<T> c, table::device::DeviceTable<T> d,
+		table::device::DeviceTable<T> const x_prev, table::device::DeviceTable<T> const x_next,
+		table::device::DeviceTable<T> const along_dfc, T along_r) {
 		unsigned row_idx = blockIdx.x * TILE_SIZE + threadIdx.x;
 		unsigned elm_idx = blockIdx.y * TILE_SIZE + threadIdx.y;
 

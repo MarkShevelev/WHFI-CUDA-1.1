@@ -8,8 +8,8 @@
 namespace iki { namespace math { namespace device { 
 	template <typename T>
 	__global__ void thomson_sweep_kernel(
-		table::DeviceTable<T> a, table::DeviceTable<T> b, table::DeviceTable<T> c, table::DeviceTable<T> d,
-		table::DeviceTable<T> x_curr) {
+		table::device::DeviceTable<T> a, table::device::DeviceTable<T> b, table::device::DeviceTable<T> c, table::device::DeviceTable<T> d,
+		table::device::DeviceTable<T> x_curr) {
 		unsigned row_idx = threadIdx.x + blockIdx.x * blockDim.x;
 		if (0 == row_idx || x_curr.row_count - 1 == row_idx) return;
 

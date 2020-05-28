@@ -10,33 +10,28 @@
 #include <iostream>
 #include <fstream>
 
-void v_field_init(iki::grid::test::HostGrid<float> &vdf_grid);
-void along_dfc_field_init(iki::grid::test::HostGrid<float> &dfc_grid);
-void perp_dfc_field_init(iki::grid::test::HostGrid<float> &dfc_grid);
+void v_field_init(iki::grid::HostGrid<float> &vdf_grid);
+void along_dfc_field_init(iki::grid::HostGrid<float> &dfc_grid);
+void perp_dfc_field_init(iki::grid::HostGrid<float> &dfc_grid);
 
 int main() {
 	using namespace std;
 	using namespace iki;
 	using namespace table;
 	using namespace grid;
-	namespace gt = iki::grid::test;
-	namespace tt = iki::table::test;
 	try {
 		unsigned vparall_size = 256, vperp_size = 512;
-		gt::Space<float> v_space{ gt::Axis<float>{ -15.f, 1.e-3f }, gt::Axis<float>{ 0.f, 1.e-3f } };
-		gt::Space<float> v_space_transposed{ gt::Axis<float>{ 0.f, 1.e-3f }, gt::Axis<float>{ -15.f, 1.e-3f } };
-		gt::HostGrid<float> vdf_grid(v_space, vparall_size, vperp_size);
-		gt::HostGrid<float> vperp_dfc_grid(v_space, vparall_size, vperp_size);
-		gt::HostGrid<float> vparall_dfc_grid(v_space_transposed, vperp_size, vparall_size);
+		Space<float> v_space{ Axis<float>{ -15.f, 1.e-3f }, Axis<float>{ 0.f, 1.e-3f } };
+		Space<float> v_space_transposed{ Axis<float>{ 0.f, 1.e-3f }, Axis<float>{ -15.f, 1.e-3f } };
+		HostGrid<float> vdf_grid(v_space, vparall_size, vperp_size);
+		HostGrid<float> vperp_dfc_grid(v_space, vparall_size, vperp_size);
+		HostGrid<float> vparall_dfc_grid(v_space_transposed, vperp_size, vparall_size);
 
 		v_field_init(vdf_grid);
 		along_dfc_field_init(vperp_dfc_grid);
 		perp_dfc_field_init(vparall_dfc_grid);
 
 		Device device(0);
-
-		unsigned const row_count = vparall_size, row_size = vperp_size;
-
 		diffusion::TwoDimensionalMultithreadDiffusion<32u, 256u, float> 
 			diffusion_solver(
 				vdf_grid.table,
@@ -48,7 +43,7 @@ int main() {
 			diffusion_solver.step();
 
 		{
-			gt::HostGrid<float> output_grid(v_space, tt::construct_from(diffusion_solver.x_prev));
+			HostGrid<float> output_grid(v_space, construct_from(diffusion_solver.x_prev));
 			ofstream ascii_os;
 			ascii_os.exceptions(ios::badbit | ios::failbit);
 			ascii_os.precision(7); ascii_os.setf(ios::fixed, ios::floatfield);
@@ -64,7 +59,7 @@ int main() {
 	return 0;
 }
 
-void v_field_init(iki::grid::test::HostGrid<float> &vdf_grid) {
+void v_field_init(iki::grid::HostGrid<float> &vdf_grid) {
 	auto &table = vdf_grid.table;
 
 	for (unsigned prp_idx = 0; prp_idx != table.row_size; ++prp_idx) {
@@ -80,7 +75,7 @@ void v_field_init(iki::grid::test::HostGrid<float> &vdf_grid) {
 		table(prl_idx,0) = table(prl_idx, table.row_size - 1) = 0.f;
 }
 
-void along_dfc_field_init(iki::grid::test::HostGrid<float> &dfc_grid) {
+void along_dfc_field_init(iki::grid::HostGrid<float> &dfc_grid) {
 	auto &table = dfc_grid.table;
 
 	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)
@@ -88,7 +83,7 @@ void along_dfc_field_init(iki::grid::test::HostGrid<float> &dfc_grid) {
 			table(row_idx,elm_idx) = 1.f;
 }
 
-void perp_dfc_field_init(iki::grid::test::HostGrid<float> &dfc_grid) {
+void perp_dfc_field_init(iki::grid::HostGrid<float> &dfc_grid) {
 	auto &table = dfc_grid.table;
 
 	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)

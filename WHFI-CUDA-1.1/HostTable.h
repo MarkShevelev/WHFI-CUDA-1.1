@@ -5,7 +5,7 @@
 namespace iki { namespace table {
 	template <typename T>
 	struct HostTable {
-		HostTable(unsigned row_count, unsigned row_size): row_count(row_count), row_size(row_size), hData(row_count * row_size) { }
+		HostTable(unsigned row_count, unsigned row_size): row_count(row_count), row_size(row_size), host_data(row_count * row_size) { }
 
 		HostTable(HostTable &&src) = default;
 		HostTable &operator=(HostTable && src) = default;
@@ -13,11 +13,11 @@ namespace iki { namespace table {
 		HostTable &operator=(HostTable const &src) = default;
 
 		T operator()(unsigned row_idx, unsigned elm_idx) const {
-			return hData[row_idx + elm_idx * row_count];
+			return host_data[row_idx + elm_idx * row_count];
 		}
 
 		T& operator()(unsigned row_idx, unsigned elm_idx) {
-			return hData[row_idx + elm_idx * row_count];
+			return host_data[row_idx + elm_idx * row_count];
 		}
 
 		unsigned full_size() const {
@@ -29,7 +29,15 @@ namespace iki { namespace table {
 			return *this;
 		}
 
+		T *data() {
+			return host_data.data();
+		}
+
+		T const *data() const {
+			return host_data.data();
+		}
+
 		unsigned row_count, row_size;
-		std::vector<T> hData;
+		std::vector<T> host_data;
 	};
 } /*table*/ } /*iki*/

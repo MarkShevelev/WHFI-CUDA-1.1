@@ -19,9 +19,6 @@
     <Filter Include="Diffusion">
       <UniqueIdentifier>{1961bb55-297e-483b-94b3-60593de5ebc9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Table">
-      <UniqueIdentifier>{41a5b561-e97c-479f-9e97-05e0e440d4fd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Diffusion\Device">
       <UniqueIdentifier>{d0ce2ba6-e8a8-4e44-b93f-81a0b99045d8}</UniqueIdentifier>
     </Filter>
@@ -31,7 +28,7 @@
     <Filter Include="Diffusion\Device\Kernel">
       <UniqueIdentifier>{24f0a508-c68c-4b77-aa60-a04566854cc8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="NewTable">
+    <Filter Include="Table">
       <UniqueIdentifier>{cf5c7366-7aa0-437e-a76c-3cc932a1850d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -51,24 +48,6 @@
     <ClInclude Include="transpose.cuh">
       <Filter>Math\Device\Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="DataTable.h">
-      <Filter>Table</Filter>
-    </ClInclude>
-    <ClInclude Include="Index.h">
-      <Filter>Table</Filter>
-    </ClInclude>
-    <ClInclude Include="DataTableIO.h">
-      <Filter>Table</Filter>
-    </ClInclude>
-    <ClInclude Include="IndexIO.h">
-      <Filter>Table</Filter>
-    </ClInclude>
-    <ClInclude Include="UniformGrid.h">
-      <Filter>Table</Filter>
-    </ClInclude>
-    <ClInclude Include="UniformGridIO.h">
-      <Filter>Table</Filter>
-    </ClInclude>
     <ClInclude Include="DataTableDeviceHelper.h">
       <Filter>DeviceHelper</Filter>
     </ClInclude>
@@ -78,39 +57,35 @@
     <ClInclude Include="forward_step_matrix_calculation_kernel.cuh">
       <Filter>Diffusion\Device\Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="TwoDimensionalMultithreadDiffusion.cuh" />
-    <ClInclude Include="cycle_grid_transpose.cuh">
-      <Filter>Math\Device\Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="correction_forward_step_matrix_calculation_kernel.cuh">
       <Filter>Diffusion\Device\Kernel</Filter>
     </ClInclude>
     <ClInclude Include="HostTable.h">
-      <Filter>NewTable</Filter>
+      <Filter>Table</Filter>
     </ClInclude>
     <ClInclude Include="HostGrid.h">
-      <Filter>NewTable</Filter>
+      <Filter>Table</Filter>
     </ClInclude>
     <ClInclude Include="DeviceTable.cuh">
-      <Filter>NewTable</Filter>
+      <Filter>Table</Filter>
     </ClInclude>
     <ClInclude Include="HostGridIO.h">
-      <Filter>NewTable</Filter>
+      <Filter>Table</Filter>
     </ClInclude>
     <ClInclude Include="HostManagedDeviceTable.cuh">
-      <Filter>NewTable</Filter>
+      <Filter>Table</Filter>
     </ClInclude>
     <ClInclude Include="HostDeviceTransfer.cuh">
-      <Filter>NewTable</Filter>
-    </ClInclude>
-    <ClInclude Include="inplace_transpose.cuh">
-      <Filter>Math\Device\Kernel</Filter>
+      <Filter>Table</Filter>
     </ClInclude>
     <ClInclude Include="HostManagedDeviceTableTranspose.cuh">
-      <Filter>NewTable</Filter>
+      <Filter>Table</Filter>
     </ClInclude>
     <ClInclude Include="HostTableTranspose.h">
-      <Filter>NewTable</Filter>
+      <Filter>Table</Filter>
+    </ClInclude>
+    <ClInclude Include="TwoDimensionalMultithreadDiffusion.cuh">
+      <Filter>Diffusion</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

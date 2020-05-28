@@ -2,15 +2,15 @@
 
 #include <cuda_runtime.h>
 
-namespace iki { namespace table {
+namespace iki { namespace table { namespace device {
 	template <typename T>
 	struct DeviceTable {
 		__device__ T operator()(unsigned row_idx, unsigned elm_idx) const {
-			return dData[row_idx + elm_idx * row_count];
+			return device_ptr[row_idx + elm_idx * row_count];
 		}
 
 		__device__ T& operator()(unsigned row_idx, unsigned elm_idx) {
-			return dData[row_idx + elm_idx * row_count];
+			return device_ptr[row_idx + elm_idx * row_count];
 		}
 
 		__device__ unsigned full_size() const {
@@ -18,6 +18,6 @@ namespace iki { namespace table {
 		}
 
 		unsigned row_count, row_size;
-		T *dData;
+		T *device_ptr;
 	};
-}/*table*/ }/*iki*/
+}/*device*/ }/*table*/ }/*iki*/
