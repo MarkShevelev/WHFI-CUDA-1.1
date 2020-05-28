@@ -45,15 +45,17 @@ namespace iki {	namespace diffusion {
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Forward step matrix calculation kernel: ", cudaStatus);
 
-				math::device::thomson_sweep_kernel<<<row_count / THREAD_COUNT, THREAD_COUNT>>>(a.data() + row_count, b.data() + row_count, c.data() + row_count, d.data() + row_count, x_next.data() + row_count, row_size - 2, row_count);
+				math::device::thomson_sweep_kernel<<<row_count / THREAD_COUNT, THREAD_COUNT>>>(a.dTable, b.dTable, c.dTable, d.dTable, x_next.dTable);
 				cudaDeviceSynchronize();
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Forward step Thomson sweep: ", cudaStatus);
 
-				table::test::transpose(x_prev, x_prev_transposed);
-				table::test::transpose(x_next, x_next_transposed);
-				a.swap_sizes(); b.swap_sizes(); c.swap_sizes(); d.swap_sizes();
+				
 			}
+
+			table::test::transpose(x_prev, x_prev_transposed);
+			table::test::transpose(x_next, x_next_transposed);
+			a.swap_sizes(); b.swap_sizes(); c.swap_sizes(); d.swap_sizes();
 
 			{
 				cudaError_t cudaStatus;
@@ -65,15 +67,17 @@ namespace iki {	namespace diffusion {
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Correction step matrix calculation kernel: ", cudaStatus);
 
-				math::device::thomson_sweep_kernel<<<row_count / THREAD_COUNT, THREAD_COUNT>>> (a.data() + row_count, b.data() + row_count, c.data() + row_count, d.data() + row_count, x_next_transposed.data() + row_count, row_size - 2, row_count);
+				math::device::thomson_sweep_kernel << <row_count / THREAD_COUNT, THREAD_COUNT >> > (a.dTable, b.dTable, c.dTable, d.dTable, x_next_transposed.dTable);
 				cudaDeviceSynchronize();
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Correction step Thomson sweep kernel: ", cudaStatus);
 
-				table::test::transpose(x_prev_transposed, x_prev);
-				table::test::transpose(x_next_transposed, x_next);
-				a.swap_sizes(); b.swap_sizes(); c.swap_sizes(); d.swap_sizes();
+				
 			}
+
+			table::test::transpose(x_prev_transposed, x_prev);
+			table::test::transpose(x_next_transposed, x_next);
+			a.swap_sizes(); b.swap_sizes(); c.swap_sizes(); d.swap_sizes();
 
 			std::swap(x_prev, x_next);
 			return *this;
