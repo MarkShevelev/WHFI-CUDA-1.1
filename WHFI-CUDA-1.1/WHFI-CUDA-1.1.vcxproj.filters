@@ -36,9 +36,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="thomson_sweep.cuh">
-      <Filter>Math\Device\SingleThread</Filter>
-    </ClInclude>
     <ClInclude Include="thomson_sweep_kernel.cuh">
       <Filter>Math\Device\Kernel</Filter>
     </ClInclude>
@@ -80,9 +77,6 @@
     </ClInclude>
     <ClInclude Include="forward_step_matrix_calculation_kernel.cuh">
       <Filter>Diffusion\Device\Kernel</Filter>
-    </ClInclude>
-    <ClInclude Include="forward_diffusion_step.cuh">
-      <Filter>Diffusion\Device</Filter>
     </ClInclude>
     <ClInclude Include="TwoDimensionalMultithreadDiffusion.cuh" />
     <ClInclude Include="cycle_grid_transpose.cuh">
