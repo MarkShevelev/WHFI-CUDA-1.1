@@ -11,7 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="correction_forward_step_matrix_calculation_kernel.cuh" />
+    <ClInclude Include="mixed_term_discretization.cuh" />
+    <ClInclude Include="correction_step_matrix_calculation_kernel.cuh" />
     <ClInclude Include="DataTableDeviceHelper.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="DeviceError.h" />
