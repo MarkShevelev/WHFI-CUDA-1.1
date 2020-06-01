@@ -3,6 +3,7 @@
 #include "thomson_sweep_kernel.cuh"
 #include "forward_step_matrix_calculation_kernel.cuh"
 #include "correction_step_matrix_calculation_kernel.cuh"
+#include "compensation_matrix_calculation_kernel.cuh"
 #include "HostManagedDeviceTable.cuh"
 #include "HostTable.h"
 #include "HostDeviceTransfer.cuh"
@@ -81,7 +82,7 @@ namespace iki {	namespace diffusion {
 
 		//x_prev x_next
 		void compensated_step() {
-			/*cudaError_t cudaStatus;
+			cudaError_t cudaStatus;
 			dim3 blockDim(TILE_SIZE, TILE_SIZE), gridDim(x_prev.row_count / TILE_SIZE, x_prev.row_size / TILE_SIZE);
 
 			device::forward_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>>(
@@ -89,16 +90,16 @@ namespace iki {	namespace diffusion {
 				x_prev.table(),
 				along_dfc.table(), along_r,
 				perp_dfc.table(), perp_r,
-				mixed_dfc.table(), mixed_r
+				along_mixed_dfc.table(), perp_mixed_dfc.table(), mixed_r
 			);
 			cudaDeviceSynchronize();
 			if (cudaSuccess != (cudaStatus = cudaGetLastError()))
-				throw DeviceError("Forward step matrix calculation kernel: ", cudaStatus);
+				throw DeviceError("Compensated step forward matrix calculation kernel: ", cudaStatus);
 
-			device::compensated_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>>(
+			device::compensation_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>>(
 				d.table(),
 				x_prev.table(), x_next.table(),
-				mixed_dfc.table(), mixed_r
+				along_mixed_dfc.table(), perp_mixed_dfc.table(), mixed_r
 			);
 			cudaDeviceSynchronize();
 			if (cudaSuccess != (cudaStatus = cudaGetLastError()))
@@ -110,7 +111,7 @@ namespace iki {	namespace diffusion {
 			);
 			cudaDeviceSynchronize();
 			if (cudaSuccess != (cudaStatus = cudaGetLastError()))
-				throw DeviceError("Forward step Thomson sweep: ", cudaStatus);*/
+				throw DeviceError("Compensated forward step Thomson sweep: ", cudaStatus);
 		}
 
 		//from x_prev to x_prev_transposed
