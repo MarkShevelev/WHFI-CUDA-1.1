@@ -14,7 +14,7 @@ namespace iki { namespace diffusion { namespace device {
 		T right_q = along_mixed_dfc(row_idx, elm_idx) * 0.5 * (right_grad + central_grad);
 		T left_q = along_mixed_dfc(row_idx, elm_idx-1) * 0.5 * (left_grad + central_grad);
 
-		return right_q - left_q;
+		return 0.25 * (right_q - left_q);
 	}
 
 	template <typename T>
@@ -26,6 +26,6 @@ namespace iki { namespace diffusion { namespace device {
 		T right_q = perp_mixed_dfc(elm_idx, row_idx) * 0.5 * (right_grad + central_grad);
 		T left_q = perp_mixed_dfc(elm_idx, row_idx - 1) * 0.5 * (left_grad + central_grad);
 
-		return right_q - left_q;
+		return 0.25 * (right_q - left_q);
 	}
 }/*device*/ }/*diffusion*/ }/*iki*/
