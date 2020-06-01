@@ -43,7 +43,7 @@ int main() {
 				vdf_grid.table,
 				vparall_dfc_grid.table, 1.0f,
 				vperp_dfc_grid.table, 1.0f,
-				vparall_mixed_dfc_grid.table, vperp_mixed_dfc_grid.table, 0.0f
+				vparall_mixed_dfc_grid.table, vperp_mixed_dfc_grid.table, 1.0f
 			);
 
 		for (unsigned iter_cnt = 0; iter_cnt != 1000; ++iter_cnt)
@@ -54,7 +54,7 @@ int main() {
 			ofstream ascii_os;
 			ascii_os.exceptions(ios::badbit | ios::failbit);
 			ascii_os.precision(7); ascii_os.setf(ios::fixed, ios::floatfield);
-			ascii_os.open("./data/two-dimensional-sin-sin-test.txt");
+			ascii_os.open("./data/two-dimensional-mixed-term-sin-sin-test.txt");
 			ascii_os << output_grid;
 		}
 	}
@@ -101,12 +101,12 @@ void along_mixed_dfc_field_int(iki::grid::HostGrid<float> &dfc_grid) {
 	auto &table = dfc_grid.table;
 	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)
 		for (unsigned elm_idx = 0; elm_idx != table.row_size; ++elm_idx)
-			table(row_idx, elm_idx) = 0.f;
+			table(row_idx, elm_idx) = 1.f;
 }
 
 void perp_mixed_dfc_field_int(iki::grid::HostGrid<float> &dfc_grid) {
 	auto &table = dfc_grid.table;
 	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)
 		for (unsigned elm_idx = 0; elm_idx != table.row_size; ++elm_idx)
-			table(row_idx, elm_idx) = 0.f;
+			table(row_idx, elm_idx) = 1.f;
 }
