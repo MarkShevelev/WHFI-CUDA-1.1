@@ -90,6 +90,9 @@
     <ClInclude Include="mixed_term_discretization.cuh">
       <Filter>Diffusion\Device\SingleThread</Filter>
     </ClInclude>
+    <ClInclude Include="compensation_matrix_calculation_kernel.cuh">
+      <Filter>Diffusion\Device\Kernel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">
