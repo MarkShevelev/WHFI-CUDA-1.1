@@ -31,6 +31,7 @@
     <ClInclude Include="thomson_sweep_kernel.cuh" />
     <ClInclude Include="transpose.cuh" />
     <ClInclude Include="TwoDimensionalMultithreadDiffusion.cuh" />
+    <ClInclude Include="ZFunc.h" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="Device.cpp" />

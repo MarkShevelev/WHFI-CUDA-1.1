@@ -31,6 +31,12 @@
     <Filter Include="Table">
       <UniqueIdentifier>{cf5c7366-7aa0-437e-a76c-3cc932a1850d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WHFI">
+      <UniqueIdentifier>{af2e6c95-f230-41bb-b0e1-639941c56c76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WHFI\ZFunc">
+      <UniqueIdentifier>{00f4d2be-dd74-4cde-9eb8-b5224f332b5f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep_kernel.cuh">
@@ -92,6 +98,9 @@
     </ClInclude>
     <ClInclude Include="compensation_matrix_calculation_kernel.cuh">
       <Filter>Diffusion\Device\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="ZFunc.h">
+      <Filter>WHFI\ZFunc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
