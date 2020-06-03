@@ -37,6 +37,9 @@
     <Filter Include="WHFI\ZFunc">
       <UniqueIdentifier>{00f4d2be-dd74-4cde-9eb8-b5224f332b5f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WHFI\DispersionRelation">
+      <UniqueIdentifier>{75e1399f-e8ee-41cc-9937-e5c40076118a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep_kernel.cuh">
@@ -101,6 +104,9 @@
     </ClInclude>
     <ClInclude Include="ZFunc.h">
       <Filter>WHFI\ZFunc</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicalParameters.h">
+      <Filter>WHFI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

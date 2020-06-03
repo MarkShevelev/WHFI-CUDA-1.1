@@ -28,6 +28,7 @@
     <ClInclude Include="HostTable.h" />
     <ClInclude Include="HostTableTranspose.h" />
     <ClInclude Include="HostManagedDeviceTableTranspose.cuh" />
+    <ClInclude Include="PhysicalParameters.h" />
     <ClInclude Include="thomson_sweep_kernel.cuh" />
     <ClInclude Include="transpose.cuh" />
     <ClInclude Include="TwoDimensionalMultithreadDiffusion.cuh" />
