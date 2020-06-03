@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HostTable.h"
+#include "HostDataLine.h"
 
 #include <array>
 #include <algorithm>
@@ -36,5 +37,14 @@ namespace iki { namespace grid {
 
 		table::HostTable<T> table;
 		Space<T> space;
+	};
+
+	template <typename T>
+	struct HostGridLine {
+		HostGridLine(Axis<T> axis, table::HostDataLine<T> &&line): line(line), axis(axis) { }
+		HostGridLine(Axis<T> axis, unsigned size) : line(size), axis(axis) { }
+
+		table::HostDataLine<T> line;
+		Axis<T> axis;
 	};
 }/*grid*/ }/*iki*/

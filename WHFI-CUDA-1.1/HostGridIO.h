@@ -16,3 +16,10 @@ std::ostream &operator<<(std::ostream &ascii_os, iki::grid::HostGrid<T> const &g
 			ascii_os << grid.space(row_idx, elm_idx) << ' ' << grid.table(row_idx, elm_idx) << '\n';
 	return ascii_os;
 }
+
+template <typename T>
+std::ostream &operator<<(std::ostream &ascii_os, iki::grid::HostGridLine<T> const &grid) {
+	for (unsigned idx = 0; idx != grid.line.size; ++idx)
+		ascii_os << grid.line.axis(idx) << ' ' << grid.line(idx) << '\n';
+	return ascii_os;
+}
