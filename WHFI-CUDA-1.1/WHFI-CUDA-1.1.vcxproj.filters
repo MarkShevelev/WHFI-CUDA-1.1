@@ -117,6 +117,15 @@
     <ClInclude Include="step_solve.h">
       <Filter>Math\Host</Filter>
     </ClInclude>
+    <ClInclude Include="DeviceDataLine.cuh">
+      <Filter>Table</Filter>
+    </ClInclude>
+    <ClInclude Include="HostManagedDeviceDataLine.cuh">
+      <Filter>Table</Filter>
+    </ClInclude>
+    <ClInclude Include="HostDataLine.h">
+      <Filter>Table</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">

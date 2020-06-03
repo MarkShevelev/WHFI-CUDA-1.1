@@ -12,6 +12,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="compensation_matrix_calculation_kernel.cuh" />
+    <ClInclude Include="DeviceDataLine.cuh" />
+    <ClInclude Include="HostDataLine.h" />
+    <ClInclude Include="HostManagedDeviceDataLine.cuh" />
     <ClInclude Include="mixed_term_discretization.cuh" />
     <ClInclude Include="correction_step_matrix_calculation_kernel.cuh" />
     <ClInclude Include="DataTableDeviceHelper.h" />
