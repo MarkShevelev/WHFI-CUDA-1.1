@@ -29,6 +29,8 @@
     <ClInclude Include="HostTableTranspose.h" />
     <ClInclude Include="HostManagedDeviceTableTranspose.cuh" />
     <ClInclude Include="PhysicalParameters.h" />
+    <ClInclude Include="ResonantVelocitySolver.h" />
+    <ClInclude Include="step_solve.h" />
     <ClInclude Include="thomson_sweep_kernel.cuh" />
     <ClInclude Include="transpose.cuh" />
     <ClInclude Include="TwoDimensionalMultithreadDiffusion.cuh" />
@@ -80,7 +82,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -98,7 +100,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

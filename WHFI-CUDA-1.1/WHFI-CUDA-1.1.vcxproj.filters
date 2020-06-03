@@ -40,6 +40,9 @@
     <Filter Include="WHFI\DispersionRelation">
       <UniqueIdentifier>{75e1399f-e8ee-41cc-9937-e5c40076118a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Math\Host">
+      <UniqueIdentifier>{7a42ba88-0dc2-4573-afe0-a247ff6e386b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep_kernel.cuh">
@@ -107,6 +110,12 @@
     </ClInclude>
     <ClInclude Include="PhysicalParameters.h">
       <Filter>WHFI</Filter>
+    </ClInclude>
+    <ClInclude Include="ResonantVelocitySolver.h">
+      <Filter>WHFI\DispersionRelation</Filter>
+    </ClInclude>
+    <ClInclude Include="step_solve.h">
+      <Filter>Math\Host</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
