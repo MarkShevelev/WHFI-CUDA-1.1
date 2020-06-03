@@ -1,4 +1,4 @@
-#include "TwoDimensionalMultithreadDiffusion.cuh"
+/*#include "TwoDimensionalMultithreadDiffusion.cuh"
 #include "Device.h"
 #include "DeviceMemory.h"
 #include "HostGrid.h"
@@ -109,4 +109,39 @@ void perp_mixed_dfc_field_int(iki::grid::HostGrid<float> &dfc_grid) {
 	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)
 		for (unsigned elm_idx = 0; elm_idx != table.row_size; ++elm_idx)
 			table(row_idx, elm_idx) = 1.f;
+}*/
+
+
+#include "ZFunc.h"
+#include "ResonantVelocitySolver.h"
+#include "HostGrid.h"
+
+#include <iostream>
+#include <fstream>
+#include <stdexcept>
+
+int main() {
+	iki::whfi::PhysicalParamenters<float> params = iki::whfi::init_parameters(0.85f, 1.0f / 0.85f, 0.25f, -1.0f);
+	auto wk_solver = iki::whfi::ResonantVelocitySolver<float>(iki::whfi::make_ZFunc(1.e-4f,10.f), params);
+
+	iki::grid::Axis<float> vparall_axis = { -15.0f, 1.e-2 };
+
+	try {
+		std::ofstream ascii_out;
+		ascii_out.exceptions(std::ios::badbit | std::ios::failbit);
+
+		ascii_out.open("./data/vres-omega-k-test.txt");
+		ascii_out.precision(7); ascii_out.setf(std::ios::fixed, std::ios::floatfield);
+		for (unsigned idx = 0; true; ++idx) {
+			auto v_res = vparall_axis(idx);
+			if (v_res > -0.9f) break;
+			auto wk_pair = wk_solver(v_res);
+			ascii_out << v_res << ' ' << wk_pair.first << ' ' << wk_pair.second << std::endl;
+		}
+	}
+	catch (std::exception const &ex) {
+		std::cout << ex.what() << std::endl;
+	}
+	
+	return 0;
 }
