@@ -150,6 +150,9 @@
     <CudaCompile Include="DiffusionTest.cu">
       <Filter>Diffusion</Filter>
     </CudaCompile>
+    <CudaCompile Include="ResonantVelocityCalculationTest.cu">
+      <Filter>WHFI</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceMemory.cpp">
