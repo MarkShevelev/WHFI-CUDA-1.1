@@ -4,7 +4,7 @@
 
 namespace iki {	namespace whfi {
 	template <typename T>
-	struct PhysicalParamenters {
+	struct PhysicalParameters {
 		//fundamental parameters
 		T nc;               //core particles density
 		T TcTh_ratio;       //ratio of the core temperature to the halo temperature
@@ -18,8 +18,8 @@ namespace iki {	namespace whfi {
 	};
 
 	template <typename T>
-	PhysicalParamenters<T> init_parameters(T nc, T betta_c, T TcTh_ratio, T bulk_to_alfven_c) {
-		PhysicalParamenters<T> p;
+	PhysicalParameters<T> init_parameters(T nc, T betta_c, T TcTh_ratio, T bulk_to_alfven_c) {
+		PhysicalParameters<T> p;
 		p.nc = nc;
 		p.betta_c = betta_c;
 		p.TcTh_ratio = TcTh_ratio;
