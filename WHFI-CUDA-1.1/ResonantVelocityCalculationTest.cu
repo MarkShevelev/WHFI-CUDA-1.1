@@ -11,7 +11,7 @@ int float_fesonant_velocity_calculation_test() {
 	auto wk_solver = iki::whfi::ResonantVelocitySolver<float>(iki::whfi::make_ZFunc(1.e-4f, 10.f), params);
 
 	unsigned vparall_size = 1024;
-	iki::grid::Axis<float> vparall_axis = { -16.5f, 1.5e-2 };
+	iki::grid::Axis<float> vparall_axis = { -16.5f, 1.5e-2f };
 	iki::grid::HostGridLine<float> w_line(vparall_axis, vparall_size);
 	iki::grid::HostGridLine<float> k_line(vparall_axis, vparall_size);
 
