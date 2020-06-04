@@ -126,6 +126,9 @@
     <ClInclude Include="HostDataLine.h">
       <Filter>Table</Filter>
     </ClInclude>
+    <ClInclude Include="DispersionRelationDerivative.h">
+      <Filter>WHFI\DispersionRelation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">
@@ -135,6 +138,9 @@
       <Filter>DeviceHelper</Filter>
     </CudaCompile>
     <CudaCompile Include="Test.cu" />
+    <CudaCompile Include="DiffusionTest.cu">
+      <Filter>Diffusion</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceMemory.cpp">
