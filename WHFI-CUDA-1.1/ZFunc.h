@@ -50,10 +50,11 @@ namespace iki {	namespace whfi {
 			auto idx = static_cast<unsigned>(farg / step);
 			if (0 == idx) {
 				T m = farg * table[1] / step;
+				return m;
 			}
 			else if ((idx + 1) < table.size() ) {
-				T a = 0.5 * (table[idx - 1] - 2 * table[idx] + table[idx + 1]) / (step * step);
-				T b = 0.5 * (table[idx + 1] - table[idx - 1]) / step;
+				T a = T(0.5) * (table[idx - 1] - 2 * table[idx] + table[idx + 1]) / (step * step);
+				T b = T(0.5) * (table[idx + 1] - table[idx - 1]) / step;
 				T m = a * (farg - step * idx) * (farg - step * idx) + b * (farg - step * idx) + table[idx];
 				return arg > T(0) ? m : -m;
 			}
