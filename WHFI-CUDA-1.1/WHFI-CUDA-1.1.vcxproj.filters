@@ -43,6 +43,9 @@
     <Filter Include="Math\Host">
       <UniqueIdentifier>{7a42ba88-0dc2-4573-afe0-a247ff6e386b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WHFI\VDF">
+      <UniqueIdentifier>{63c6f4c5-cdce-41ca-a3c4-483eeaa65884}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep_kernel.cuh">
@@ -128,6 +131,12 @@
     </ClInclude>
     <ClInclude Include="DispersionRelationDerivative.h">
       <Filter>WHFI\DispersionRelation</Filter>
+    </ClInclude>
+    <ClInclude Include="host_math_helper.h">
+      <Filter>Math\Host</Filter>
+    </ClInclude>
+    <ClInclude Include="VelocityDistributionFunction.h">
+      <Filter>WHFI\VDF</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
