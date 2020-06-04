@@ -46,6 +46,9 @@
     <Filter Include="WHFI\VDF">
       <UniqueIdentifier>{63c6f4c5-cdce-41ca-a3c4-483eeaa65884}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WHFI\VDF\Device">
+      <UniqueIdentifier>{2a2aeab8-25aa-4c28-ab06-4c1dc6158f1a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep_kernel.cuh">
@@ -138,6 +141,15 @@
     <ClInclude Include="VelocityDistributionFunction.h">
       <Filter>WHFI\VDF</Filter>
     </ClInclude>
+    <ClInclude Include="zero_moment_kernel.cuh">
+      <Filter>WHFI\VDF\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="AnalyticalMoments.h">
+      <Filter>WHFI</Filter>
+    </ClInclude>
+    <ClInclude Include="first_moment_kernel.cuh">
+      <Filter>WHFI\VDF\Device</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">
@@ -146,13 +158,13 @@
     <CudaCompile Include="Device.cpp">
       <Filter>DeviceHelper</Filter>
     </CudaCompile>
-    <CudaCompile Include="Test.cu" />
     <CudaCompile Include="DiffusionTest.cu">
       <Filter>Diffusion</Filter>
     </CudaCompile>
     <CudaCompile Include="ResonantVelocityCalculationTest.cu">
       <Filter>WHFI</Filter>
     </CudaCompile>
+    <CudaCompile Include="MomentsTest.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceMemory.cpp">

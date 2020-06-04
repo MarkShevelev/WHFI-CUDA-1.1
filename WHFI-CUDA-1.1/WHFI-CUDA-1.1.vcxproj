@@ -11,9 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnalyticalMoments.h" />
     <ClInclude Include="compensation_matrix_calculation_kernel.cuh" />
     <ClInclude Include="DeviceDataLine.cuh" />
     <ClInclude Include="DispersionRelationDerivative.h" />
+    <ClInclude Include="first_moment_kernel.cuh" />
     <ClInclude Include="HostDataLine.h" />
     <ClInclude Include="HostManagedDeviceDataLine.cuh" />
     <ClInclude Include="host_math_helper.h" />
@@ -40,6 +42,7 @@
     <ClInclude Include="transpose.cuh" />
     <ClInclude Include="TwoDimensionalMultithreadDiffusion.cuh" />
     <ClInclude Include="VelocityDistributionFunction.h" />
+    <ClInclude Include="zero_moment_kernel.cuh" />
     <ClInclude Include="ZFunc.h" />
   </ItemGroup>
   <ItemGroup>
@@ -47,7 +50,7 @@
     <CudaCompile Include="DeviceError.cpp" />
     <CudaCompile Include="DiffusionTest.cu" />
     <CudaCompile Include="ResonantVelocityCalculationTest.cu" />
-    <CudaCompile Include="Test.cu" />
+    <CudaCompile Include="MomentsTest.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceMemory.cpp" />
@@ -99,6 +102,8 @@
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
+      <AdditionalCompilerOptions>
+      </AdditionalCompilerOptions>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -119,6 +124,8 @@
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
+      <AdditionalCompilerOptions>
+      </AdditionalCompilerOptions>
     </CudaCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
