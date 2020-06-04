@@ -46,8 +46,22 @@ namespace iki { namespace table {
 
 	template <typename T>
 	void device_to_host_transfer(HostManagedDeviceDataLine<T> const &device, HostDataLine<T> &host) {
-		cudaError_t cudaStatus = cudaMemcpy(host.data(), device.dMemory, device.size * sizeof(T), cudaMemcpyHostToDevice);
+		cudaError_t cudaStatus = cudaMemcpy(host.data(), device.dMemory, device.size * sizeof(T), cudaMemcpyDeviceToHost);
 		if (cudaSuccess != cudaStatus)
 			throw DeviceError("Device to host data transfer failed: ", cudaStatus);
+	}
+
+	template <typename T>
+	HostManagedDeviceDataLine<T> construct_from(HostDataLine<T> const &host) {
+		HostManagedDeviceDataLine<T> device_line(host.size);
+		host_to_device_transfer(host, device_line);
+		return device_line;
+	}
+
+	template <typename T>
+	HostDataLine<T> construct_from(HostManagedDeviceDataLine<T> const &device) {
+		HostDataLine<T> host_line(device.size);
+		device_to_host_transfer(device, host_line);
+		return host_line;
 	}
 }/*table*/ }/*iki*/
