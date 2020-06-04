@@ -26,10 +26,10 @@ namespace iki { namespace whfi {
 			return { omega, (omega - T(1.)) / (resonant_v * params.betta_root_c) };
 		}
 
-		ResonantVelocitySolver(ZFunc<T> Z, PhysicalParamenters<T> params): Z(Z), params(params) { }
+		ResonantVelocitySolver(ZFunc<T> Z, PhysicalParameters<T> params): Z(Z), params(params) { }
 	private:
 		ZFunc<T> Z;
-		PhysicalParamenters<T> params;
+		PhysicalParameters<T> params;
 
 	};
 } /* whfi */ } /* iki */
