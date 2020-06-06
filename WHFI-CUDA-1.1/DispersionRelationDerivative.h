@@ -14,11 +14,11 @@ namespace iki { namespace whfi {
 				+ p.nh / (k * p.betta_root_h) * (-Zh + (omega / (k * p.betta_root_h) - p.bulk_to_term_h) * (Zh * arg_h + T(1.)));
 		}
 
-		DispersionRelationOmegaDerivative(ZFunc<T> Z, PhysicalParamenters<T> p) : Z(Z), p(p) { }
+		DispersionRelationOmegaDerivative(ZFunc<T> Z, PhysicalParameters<T> p) : Z(Z), p(p) { }
 
 	private:
 		ZFunc<T> Z;
-		PhysicalParamenters<T> p;
+		PhysicalParameters<T> p;
 	};
 
 	template <typename T>
@@ -34,10 +34,10 @@ namespace iki { namespace whfi {
 				- p.nh * (omega / (k * p.betta_root_h) - p.bulk_to_term_h) * (Zh * arg_h + T(1.)) * (omega - T(1.)) / (k * k * p.betta_root_h);
 		}
 
-		DispersionRelationKDerivative(ZFunc<T> Z, PhysicalParamenters<T> p) : Z(Z), p(p) { }
+		DispersionRelationKDerivative(ZFunc<T> Z, PhysicalParameters<T> p) : Z(Z), p(p) { }
 
 	private:
 		ZFunc<T> Z;
-		PhysicalParamenters<T> p;
+		PhysicalParameters<T> p;
 	};
 }/*whfi*/ }/*iki*/
