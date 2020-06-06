@@ -55,6 +55,9 @@
     <Filter Include="WHFI\GrowthRate\Device">
       <UniqueIdentifier>{7a5edbff-5219-482e-8239-2aa14cfb4380}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{776ebc7f-2c51-4833-9b38-e91acb5aae95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep_kernel.cuh">
@@ -170,8 +173,12 @@
     <CudaCompile Include="DiffusionTest.cu">
       <Filter>Diffusion</Filter>
     </CudaCompile>
-    <CudaCompile Include="MomentsTest.cu" />
-    <CudaCompile Include="ResonantVelocityCalculationTest.cu" />
+    <CudaCompile Include="ResonantVelocityCalculationTest.cu">
+      <Filter>Test</Filter>
+    </CudaCompile>
+    <CudaCompile Include="MomentsTest.cu">
+      <Filter>Test</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceMemory.cpp">
