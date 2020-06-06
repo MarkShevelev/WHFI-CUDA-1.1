@@ -179,6 +179,10 @@
     <CudaCompile Include="MomentsTest.cu">
       <Filter>Test</Filter>
     </CudaCompile>
+    <CudaCompile Include="DiffusionCoefficientTest.cu">
+      <Filter>Test</Filter>
+    </CudaCompile>
+    <CudaCompile Include="MainTest.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceMemory.cpp">

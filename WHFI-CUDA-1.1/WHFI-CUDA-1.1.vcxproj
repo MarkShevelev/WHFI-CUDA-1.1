@@ -49,7 +49,9 @@
   <ItemGroup>
     <CudaCompile Include="Device.cpp" />
     <CudaCompile Include="DeviceError.cpp" />
+    <CudaCompile Include="DiffusionCoefficientTest.cu" />
     <CudaCompile Include="DiffusionTest.cu" />
+    <CudaCompile Include="MainTest.cu" />
     <CudaCompile Include="ResonantVelocityCalculationTest.cu" />
     <CudaCompile Include="MomentsTest.cu" />
   </ItemGroup>
