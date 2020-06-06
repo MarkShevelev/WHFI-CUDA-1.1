@@ -16,6 +16,7 @@
     <ClInclude Include="DeviceDataLine.cuh" />
     <ClInclude Include="DispersionRelationDerivative.h" />
     <ClInclude Include="first_moment_kernel.cuh" />
+    <ClInclude Include="growth_rate_kernel.cuh" />
     <ClInclude Include="HostDataLine.h" />
     <ClInclude Include="HostManagedDeviceDataLine.cuh" />
     <ClInclude Include="host_math_helper.h" />
