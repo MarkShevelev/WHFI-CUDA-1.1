@@ -28,7 +28,7 @@ namespace iki {	namespace whfi {
 
 	template <typename T>
 	std::vector<T> ZFuncTableCalculator(T step, T max) {
-		std::vector<T> table(static_cast<unsigned>(max / step) + 1);
+		std::vector<T> table(static_cast<unsigned>(max / step) + 1u);
 		auto runge4th = Runge4th<T, ZFuncODE<T>>(T(0.), T(step), ZFuncODE<T>());
 		T c = T(0), s = T(0);
 		for (unsigned idx = 0; idx != table.size(); ++idx) {

@@ -10,7 +10,7 @@ namespace iki { namespace math {
 			f_curr = f(arg_curr), f_next = f(arg_next);
 
 		while (arg_res < max) {
-			if (f_curr * f_next < 0.) { return arg_res; }
+			if (f_curr * f_next < T(0.)) { return arg_res; }
 			arg_curr = arg_next; f_curr = f_next;
 			arg_next = min + ++counter * step; f_next = f(arg_next);
 			arg_res = T(0.5) * (arg_curr + arg_next);
