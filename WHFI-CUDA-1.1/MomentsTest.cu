@@ -17,134 +17,134 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 
-int main() {
-	iki::whfi::PhysicalParameters<float> params = iki::whfi::init_parameters(0.85f, 1.0f / 0.85f, 0.25f, -9.0f);
-	iki::whfi::muVDF<float> mu_vdf(params);
+using namespace std;
+using namespace iki;
+using namespace iki::whfi;
+using namespace iki::table;
+using namespace iki::grid;
 
-	iki::grid::Space<float> vparall_mu_space = {
-		iki::grid::Axis<float>{-16.5f, 3.e-2f},
-		iki::grid::Axis<float>{0.f, 3.e-2f}
-	};
-	auto vdf_grid = iki::whfi::calculate_muVDF(params, vparall_mu_space, 512, 1024);
-	auto vdf_device_table = iki::table::construct_from(vdf_grid.table);
-	auto zero_moment = iki::table::HostManagedDeviceDataLine<float>(vdf_grid.table.row_count);
-	auto first_moment = iki::table::HostManagedDeviceDataLine<float>(vdf_grid.table.row_count);
-	auto k_betta = iki::table::HostManagedDeviceDataLine<float>(vdf_grid.table.row_count);
-	auto dispersion_derive = iki::table::HostManagedDeviceDataLine<float>(vdf_grid.table.row_count);
-	auto gamma = iki::table::HostManagedDeviceDataLine<float>(vdf_grid.table.row_count);
-	auto k_betta_host = iki::table::HostDataLine<float>(vdf_grid.table.row_count);
-	auto dispersion_derive_host = iki::table::HostDataLine<float>(vdf_grid.table.row_count);
+void float_moments_growth_rate_test(PhysicalParameters<float> params, Axis<float> vparall_axis, Axis<float> vperp_axis, unsigned vparall_size, unsigned vperp_size) {
+	stringstream params_ss;
+	params_ss.precision(2); params_ss.setf(ios::fixed, ios::floatfield);
+	params_ss << params.betta_c << '-' << params.bulk_to_alfven_c;
 
-	try {
-		//k_betta and dispersion_derive calculation
-		{
-			auto zfunc = iki::whfi::make_ZFunc(1.e-5f, 15.f);
-			auto wk_solver = iki::whfi::ResonantVelocitySolver<float>(zfunc, params);
-			auto dr_derive = iki::whfi::DispersionRelationOmegaDerivative<float>(zfunc, params);
+	muVDF<float> mu_vdf(params);
+	Space<float> vparall_mu_space = { vparall_axis,vperp_axis };
+	auto vdf_grid = calculate_muVDF(params, vparall_mu_space, vparall_size, vperp_size);
+	auto vdf_device_table = construct_from(vdf_grid.table);
+	auto zero_moment = HostManagedDeviceDataLine<float>(vdf_grid.table.row_count);
+	auto first_moment = HostManagedDeviceDataLine<float>(vdf_grid.table.row_count);
+	auto k_betta = HostManagedDeviceDataLine<float>(vdf_grid.table.row_count);
+	auto dispersion_derive = HostManagedDeviceDataLine<float>(vdf_grid.table.row_count);
+	auto growth_rate = HostManagedDeviceDataLine<float>(vdf_grid.table.row_count);
+	auto k_betta_host = HostDataLine<float>(vdf_grid.table.row_count);
+	auto dispersion_derive_host = HostDataLine<float>(vdf_grid.table.row_count);
 
-			auto const &vparall_axis = vparall_mu_space.perp;
-			for (unsigned idx = 0; idx != vdf_grid.table.row_count; ++idx) {
-				auto wk_pair = wk_solver(vparall_axis(idx));
-				k_betta_host(idx) = wk_pair.second * params.betta_root_c;
-				dispersion_derive_host(idx) = dr_derive(wk_pair.first, wk_pair.second);
-			}
-			iki::table::host_to_device_transfer(k_betta_host, k_betta);
-			iki::table::host_to_device_transfer(dispersion_derive_host, dispersion_derive);
+	//k_betta and dispersion_derive calculation
+	{
+		auto zfunc = make_ZFunc(1.e-5f, 15.f);
+		auto wk_solver = ResonantVelocitySolver<float>(zfunc, params);
+		auto dr_derive = DispersionRelationOmegaDerivative<float>(zfunc, params);
+
+		for (unsigned idx = 0; idx != vdf_grid.table.row_count; ++idx) {
+			auto wk_pair = wk_solver(vparall_axis(idx));
+			k_betta_host(idx) = wk_pair.second * params.betta_root_c;
+			dispersion_derive_host(idx) = dr_derive(wk_pair.first, wk_pair.second);
 		}
+		host_to_device_transfer(k_betta_host, k_betta);
+		host_to_device_transfer(dispersion_derive_host, dispersion_derive);
+	}
 
-		iki::whfi::AnalyticalMoments<float> analytical_moments(params);
-		auto g = analytical_moments.g(vparall_mu_space.perp.begin, vparall_mu_space.perp.step, vdf_grid.table.row_count); //zero_moment
-		auto G = analytical_moments.G(vparall_mu_space.perp.begin, vparall_mu_space.perp.step, vdf_grid.table.row_count);//first_moment
+	AnalyticalMoments<float> analytical_moments(params);
+	//zero_moment
+	auto g = analytical_moments.g(vparall_axis.begin, vparall_axis.step, vdf_grid.table.row_count); 
+	//first_moment
+	auto G = analytical_moments.G(vparall_axis.begin, vparall_axis.step, vdf_grid.table.row_count);
 
-		//zero moment calculation
-		{
-			dim3 threads(512), blocks(vdf_grid.table.row_count / threads.x);
-			cudaError_t cudaStatus;
-			iki::whfi::device::zero_moment_kernel <<<blocks, threads>>> (vdf_device_table.table(), vparall_mu_space.along.begin, vparall_mu_space.along.step, zero_moment.line());
-			cudaDeviceSynchronize();
+	//zero moment calculation
+	{
+		dim3 threads(512), blocks((vdf_grid.table.row_count + threads.x - 1) / threads.x);
+		cudaError_t cudaStatus;
+		whfi::device::zero_moment_kernel <<<blocks, threads>>> (vdf_device_table.table(), vparall_mu_space.along.begin, vparall_mu_space.along.step, zero_moment.line());
+		cudaDeviceSynchronize();
 
-			cudaStatus = cudaGetLastError();
-			if (cudaSuccess != cudaStatus)
-				throw iki::DeviceError(cudaStatus);
-
-			{
-				iki::grid::HostGridLine<float> zero_moment_grid(vparall_mu_space.perp, iki::table::construct_from(zero_moment));
-				std::ofstream ascii_out;
-				ascii_out.exceptions(std::ios::failbit | std::ios::badbit);
-
-				ascii_out.open("./data/zero-moment-test.txt");
-				ascii_out.precision(7);
-				ascii_out.setf(std::ios::scientific, std::ios::floatfield);
-
-				for (unsigned idx = 0; idx != zero_moment_grid.line.size; ++idx) {
-					ascii_out << zero_moment_grid.axis(idx) << ' ' << zero_moment_grid.line(idx) << ' ' << g[idx] << ' ' << (zero_moment_grid.line(idx) - g[idx]) << ' ' << (zero_moment_grid.line(idx) - g[idx])/g[idx] << '\n';
-				}
-			}
-		}
-
-		//first moment calculation
-		{
-			dim3 threads(512), blocks(vdf_grid.table.row_count / threads.x);
-			cudaError_t cudaStatus;
-			iki::whfi::device::first_moment_kernel <<<blocks, threads>>> (vdf_device_table.table(), vparall_mu_space.along.begin, vparall_mu_space.along.step, first_moment.line());
-			cudaDeviceSynchronize();
-
-			cudaStatus = cudaGetLastError();
-			if (cudaSuccess != cudaStatus)
-				throw iki::DeviceError(cudaStatus);
-
-			{
-				iki::grid::HostGridLine<float> first_moment_grid(vparall_mu_space.perp, iki::table::construct_from(first_moment));
-				std::ofstream ascii_out;
-				ascii_out.exceptions(std::ios::failbit | std::ios::badbit);
-
-				ascii_out.open("./data/first-moment-test.txt");
-				ascii_out.precision(7);
-				ascii_out.setf(std::ios::scientific, std::ios::floatfield);
-
-				for (unsigned idx = 0; idx != first_moment_grid.line.size; ++idx) {
-					ascii_out << first_moment_grid.axis(idx) << ' ' << first_moment_grid.line(idx) << ' ' << G[idx] << ' ' << (first_moment_grid.line(idx) - G[idx]) << ' ' << (first_moment_grid.line(idx) - G[idx])/G[idx] << '\n';
-				}
-			}
-		}
+		cudaStatus = cudaGetLastError();
+		if (cudaSuccess != cudaStatus)
+			throw DeviceError(cudaStatus);
 
 		{
-			dim3 threads(512), blocks(vdf_grid.table.row_count / threads.x);
-			cudaError_t cudaStatus;
-			iki::whfi::device::growth_rate_kernel <<<blocks, threads>>> (
-				zero_moment.line(),
-				first_moment.line(),
-				k_betta.line(), 
-				dispersion_derive.line(),
-				vparall_mu_space.perp.step,
-				gamma.line()
-			);
-			cudaDeviceSynchronize();
+			HostGridLine<float> zero_moment_grid(vparall_mu_space.perp, construct_from(zero_moment));
+			ofstream ascii_out;
+			ascii_out.exceptions(std::ios::failbit | std::ios::badbit);
 
-			cudaStatus = cudaGetLastError();
-			if (cudaSuccess != cudaStatus)
-				throw iki::DeviceError(cudaStatus);
+			ascii_out.open("./data/zero-moment-" + params_ss.str() + "-test.txt");
+			ascii_out.precision(7);
+			ascii_out.setf(std::ios::scientific, std::ios::floatfield);
 
-			{
-				iki::grid::HostGridLine<float> gamma_grid(vparall_mu_space.perp, iki::table::construct_from(gamma));
-				std::ofstream ascii_out;
-				ascii_out.exceptions(std::ios::failbit | std::ios::badbit);
-
-				ascii_out.open("./data/gamma-test.txt");
-				ascii_out.precision(7);
-				ascii_out.setf(std::ios::fixed, std::ios::floatfield);
-
-				for (unsigned idx = 1; idx != gamma.size - 1; ++idx) {
-					ascii_out << vparall_mu_space.perp(idx) << ' ' << k_betta_host(idx) / params.betta_root_c << ' ' << gamma_grid.line(idx) << '\n';
-				}
+			for (unsigned idx = 0; idx != zero_moment_grid.line.size; ++idx) {
+				ascii_out << zero_moment_grid.axis(idx) << ' ' << zero_moment_grid.line(idx) << ' ' << g[idx] << ' ' << (zero_moment_grid.line(idx) - g[idx]) << ' ' << (zero_moment_grid.line(idx) - g[idx])/g[idx] << '\n';
 			}
 		}
 	}
-	catch (std::exception &ex) {
-		std::cout << ex.what() << std::endl;
+
+	//first moment calculation
+	{
+		dim3 threads(512), blocks((vdf_grid.table.row_count + threads.x - 1) / threads.x);
+		cudaError_t cudaStatus;
+		whfi::device::first_moment_kernel <<<blocks, threads>>> (vdf_device_table.table(), vparall_mu_space.along.begin, vparall_mu_space.along.step, first_moment.line());
+		cudaDeviceSynchronize();
+
+		cudaStatus = cudaGetLastError();
+		if (cudaSuccess != cudaStatus)
+			throw DeviceError(cudaStatus);
+
+		{
+			HostGridLine<float> first_moment_grid(vparall_mu_space.perp, construct_from(first_moment));
+			std::ofstream ascii_out;
+			ascii_out.exceptions(std::ios::failbit | std::ios::badbit);
+
+			ascii_out.open("./data/first-moment-" + params_ss.str() + "-test.txt");
+			ascii_out.precision(7);
+			ascii_out.setf(std::ios::scientific, std::ios::floatfield);
+
+			for (unsigned idx = 0; idx != first_moment_grid.line.size; ++idx) {
+				ascii_out << first_moment_grid.axis(idx) << ' ' << first_moment_grid.line(idx) << ' ' << G[idx] << ' ' << (first_moment_grid.line(idx) - G[idx]) << ' ' << (first_moment_grid.line(idx) - G[idx])/G[idx] << '\n';
+			}
+		}
 	}
 
-	return 0;
+	{
+		dim3 threads(512), blocks((vdf_grid.table.row_count + threads.x - 1) / threads.x);
+		cudaError_t cudaStatus;
+		whfi::device::growth_rate_kernel <<<blocks, threads>>> (
+			zero_moment.line(),
+			first_moment.line(),
+			k_betta.line(), 
+			dispersion_derive.line(),
+			vparall_mu_space.perp.step,
+			growth_rate.line()
+		);
+		cudaDeviceSynchronize();
+
+		cudaStatus = cudaGetLastError();
+		if (cudaSuccess != cudaStatus)
+			throw iki::DeviceError(cudaStatus);
+
+		{
+			HostGridLine<float> gr_grid(vparall_mu_space.perp, construct_from(growth_rate));
+			std::ofstream ascii_out;
+			ascii_out.exceptions(std::ios::failbit | std::ios::badbit);
+
+			ascii_out.open("./data/gamma-" + params_ss.str() + "-test.txt");
+			ascii_out.precision(7);
+			ascii_out.setf(std::ios::fixed, std::ios::floatfield);
+
+			for (unsigned idx = 1; idx != growth_rate.size - 1; ++idx) {
+				ascii_out << vparall_mu_space.perp(idx) << ' ' << k_betta_host(idx) / params.betta_root_c << ' ' << gr_grid.line(idx) << '\n';
+			}
+		}
+	}
 }
