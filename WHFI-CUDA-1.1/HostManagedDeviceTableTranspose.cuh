@@ -12,6 +12,7 @@ namespace iki { namespace table {
 		cudaError_t cudaStatus;
 		dim3 grid(from.row_count / 32, from.row_size / 32), threads(32, 8);
 		math::device::transpose_kernell<32,8><<<grid,threads>>> (to.data(), from.data(), from.row_count, from.row_size);
+		cudaDeviceSynchronize();
 		if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 			throw DeviceError("Can't transpose: ", cudaStatus);
 	}
