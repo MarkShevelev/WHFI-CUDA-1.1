@@ -19,7 +19,13 @@ namespace iki {	namespace diffusion {
 		using HostTable = table::HostTable<T>;
 	public:
 		TwoDimensionalMultithreadDiffusion(
-			HostTable const &init_host, HostTable const &perp_dfc_host, T perp_r, HostTable const &along_dfc_host, T along_r, HostTable const &perp_mixed_dfc_host, HostTable const &along_mixed_dfc_host, T mixed_r):
+			HostTable const &init_host, 
+			HostTable const &perp_dfc_host, T perp_r, 
+			HostTable const &along_dfc_host, T along_r, 
+			HostTable const &perp_mixed_dfc_host,  //along perp
+			HostTable const &along_mixed_dfc_host, //perp along
+			T mixed_r
+		):
 			a(init_host.row_count, init_host.row_size), 
 			b(init_host.row_count, init_host.row_size), 
 			c(init_host.row_count, init_host.row_size), 
