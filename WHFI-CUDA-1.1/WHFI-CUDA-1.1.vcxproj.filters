@@ -162,6 +162,9 @@
     <ClInclude Include="growth_rate_kernel.cuh">
       <Filter>WHFI\GrowthRate\Device</Filter>
     </ClInclude>
+    <ClInclude Include="diffusion_coefficients_calculation.cuh">
+      <Filter>WHFI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">
@@ -169,9 +172,6 @@
     </CudaCompile>
     <CudaCompile Include="Device.cpp">
       <Filter>DeviceHelper</Filter>
-    </CudaCompile>
-    <CudaCompile Include="DiffusionTest.cu">
-      <Filter>Diffusion</Filter>
     </CudaCompile>
     <CudaCompile Include="ResonantVelocityCalculationTest.cu">
       <Filter>Test</Filter>
@@ -183,6 +183,12 @@
       <Filter>Test</Filter>
     </CudaCompile>
     <CudaCompile Include="MainTest.cu" />
+    <CudaCompile Include="VDFDiffusionTest.cu">
+      <Filter>Test</Filter>
+    </CudaCompile>
+    <CudaCompile Include="DiffusionTest.cu">
+      <Filter>Test</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceMemory.cpp">

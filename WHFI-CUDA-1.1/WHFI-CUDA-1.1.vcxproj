@@ -14,6 +14,7 @@
     <ClInclude Include="AnalyticalMoments.h" />
     <ClInclude Include="compensation_matrix_calculation_kernel.cuh" />
     <ClInclude Include="DeviceDataLine.cuh" />
+    <ClInclude Include="diffusion_coefficients_calculation.cuh" />
     <ClInclude Include="DispersionRelationDerivative.h" />
     <ClInclude Include="first_moment_kernel.cuh" />
     <ClInclude Include="growth_rate_kernel.cuh" />
@@ -54,6 +55,7 @@
     <CudaCompile Include="MainTest.cu" />
     <CudaCompile Include="ResonantVelocityCalculationTest.cu" />
     <CudaCompile Include="MomentsTest.cu" />
+    <CudaCompile Include="VDFDiffusionTest.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceMemory.cpp" />
