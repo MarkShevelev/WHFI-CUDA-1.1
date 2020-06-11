@@ -38,13 +38,15 @@ void float_vdf_diffusion_test(PhysicalParameters<float> params, Axis<float> vpar
 	HostTable<float> h_dfc_vparall_vperp(vparall_size, vperp_size);
 	HostTable<float> h_dfc_vparall_vparall(vperp_size, vparall_size); //transposed
 	HostTable<float> h_dfc_vperp_vparall(vperp_size, vparall_size);   //transposed
+	HostDataLine<float> k_betta(vparall_size);
+	HostDataLine<float> dispersion_derive(vparall_size);
 	diffusion_coefficients_calculation<float>(
 		params, 
 		vparall_axis, vperp_axis, 
 		vparall_size, vperp_size,
-		h_amplitude_spectrum,
 		h_dfc_vperp_vperp, h_dfc_vparall_vperp,
-		h_dfc_vparall_vparall, h_dfc_vperp_vparall //transposed;
+		h_dfc_vparall_vparall, h_dfc_vperp_vparall, //transposed
+		k_betta, dispersion_derive
 	);
 	std::cout << "diffusion coefficients calculated" << std::endl;
 
