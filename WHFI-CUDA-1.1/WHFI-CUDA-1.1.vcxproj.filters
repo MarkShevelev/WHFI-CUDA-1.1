@@ -165,6 +165,9 @@
     <ClInclude Include="diffusion_coefficients_calculation.cuh">
       <Filter>WHFI</Filter>
     </ClInclude>
+    <ClInclude Include="GrowthRateCalculation.cuh">
+      <Filter>WHFI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">
