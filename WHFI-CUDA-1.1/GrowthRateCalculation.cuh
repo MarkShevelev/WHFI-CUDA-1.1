@@ -19,7 +19,7 @@ namespace iki { namespace whfi {
 		GrowthRateCalculation(
 			grid::Space<T> vspace,
 			table::HostDataLine<T> const &h_k_betta,
-			table::HostDataLine<T> const &h_dispersion_derive,
+			table::HostDataLine<T> const &h_dispersion_derive
 		): 
 		vspace(vspace), 
 		k_betta(table::construct_from(h_k_betta)),
