@@ -12,7 +12,7 @@ namespace iki { namespace whfi { namespace device {
 		unsigned row_idx = threadIdx.x + blockDim.x * blockIdx.x;
  
 		T sum = T(0.); //3/8 formula
-		for (unsigned elm_idx = 0; elm_idx + 3 < vdf_table.row_size; elm_idx += 3) {
+		for (unsigned elm_idx = 1; elm_idx + 3 < vdf_table.row_size; elm_idx += 3) {
 			sum += T(3. / 8.) * step * (vdf_table(row_idx, elm_idx) + T(3.) * vdf_table(row_idx, elm_idx + 1) + T(3.) * vdf_table(row_idx, elm_idx + 2) + vdf_table(row_idx, elm_idx + 3));
 		}
 		zero_moment(row_idx) = sum;
