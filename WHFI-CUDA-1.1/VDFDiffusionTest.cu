@@ -11,6 +11,7 @@
 #include "Device.h"
 #include "TwoDimensionalMultithreadDiffusion.cuh"
 #include "host_math_helper.h"
+#include "GrowthRateCalculation.cuh"
 
 #include <iostream>
 #include <fstream>
@@ -38,15 +39,15 @@ void float_vdf_diffusion_test(PhysicalParameters<float> params, Axis<float> vpar
 	HostTable<float> h_dfc_vparall_vperp(vparall_size, vperp_size);
 	HostTable<float> h_dfc_vparall_vparall(vperp_size, vparall_size); //transposed
 	HostTable<float> h_dfc_vperp_vparall(vperp_size, vparall_size);   //transposed
-	HostDataLine<float> k_betta(vparall_size);
-	HostDataLine<float> dispersion_derive(vparall_size);
+	HostDataLine<float> h_k_betta(vparall_size);
+	HostDataLine<float> h_dispersion_derive(vparall_size);
 	diffusion_coefficients_calculation<float>(
 		params, 
 		vparall_axis, vperp_axis, 
 		vparall_size, vperp_size,
 		h_dfc_vperp_vperp, h_dfc_vparall_vperp,
 		h_dfc_vparall_vparall, h_dfc_vperp_vparall, //transposed
-		k_betta, dispersion_derive
+		h_k_betta, h_dispersion_derive
 	);
 	std::cout << "diffusion coefficients calculated" << std::endl;
 
@@ -88,6 +89,9 @@ void float_vdf_diffusion_test(PhysicalParameters<float> params, Axis<float> vpar
 	}
 
 	Device device(0);
+
+	
+
 	float rvperp = dt / math::pow<2u>(vspace.along.step), rvparall = dt / math::pow<2u>(vspace.perp.step), rmixed = std::sqrt(rvperp*rvparall);
 	diffusion::TwoDimensionalMultithreadDiffusion<32u, 256u, float>
 		diffusion_solver(
@@ -96,6 +100,22 @@ void float_vdf_diffusion_test(PhysicalParameters<float> params, Axis<float> vpar
 			h_dfc_vperp_vperp, rvparall,
 			h_dfc_vperp_vparall, h_dfc_vparall_vperp, rmixed
 		);
+
+	GrowthRateCalculation<float> growth_rate(vspace, h_k_betta, h_dispersion_derive);
+	if (true) {
+		growth_rate.recalculate(diffusion_solver.x_prev);
+		HostGridLine<float> growth_rate_grid(vspace.perp, construct_from(growth_rate.growth_rate));
+		{
+			ofstream ascii_out;
+			ascii_out.exceptions(ios::failbit | ios::badbit);
+			ascii_out.precision(7); ascii_out.setf(ios::scientific, ios::floatfield);
+			ascii_out.open("./data/growth-rate-initial-test.txt");
+			for (unsigned idx = 0; idx != vparall_size; ++idx) {
+				ascii_out << h_k_betta(idx) << ' ' << h_dispersion_derive(idx) << ' ' << h_k_betta(idx) / params.betta_root_c << ' ' << growth_rate_grid.line(idx) << '\n';
+			}
+		}
+		return;
+	}
 
 	for (unsigned iter_cnt = 0; iter_cnt != iteration; ++iter_cnt)
 		diffusion_solver.step();
