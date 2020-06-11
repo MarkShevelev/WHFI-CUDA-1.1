@@ -17,7 +17,7 @@ void float_vdf_diffusion_test(PhysicalParameters<float> params, Axis<float> vpar
 int main() {
 	try {
 		auto params = init_parameters(0.85f, 1.0f / 0.85f, 0.25f, -9.f);
-		Axis<float> vparall_axis = { -16.25f, 3e-2f }; unsigned vparall_size = 512;
+		Axis<float> vparall_axis = { -16.3f, 3e-2f }; unsigned vparall_size = 512;
 		Axis<float> vperp_axis = { -3.e-2f, 3.e-2f }; unsigned vperp_size = 1024;
 		float_vdf_diffusion_test(params, vparall_axis, vperp_axis, vparall_size, vperp_size, 1.e-3f, 1000);
 	} 
