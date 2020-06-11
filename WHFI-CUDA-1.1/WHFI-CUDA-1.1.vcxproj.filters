@@ -166,7 +166,7 @@
       <Filter>WHFI</Filter>
     </ClInclude>
     <ClInclude Include="GrowthRateCalculation.cuh">
-      <Filter>WHFI</Filter>
+      <Filter>WHFI\GrowthRate</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
