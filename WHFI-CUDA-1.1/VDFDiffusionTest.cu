@@ -7,11 +7,12 @@
 #include "HostTableTranspose.h"
 #include "HostGridIO.h"
 #include "VelocityDistributionFunction.h"
-#include "diffusion_coefficients_calculation.cuh"
+#include "initial_diffusion_coefficients_calculation.cuh"
 #include "Device.h"
 #include "TwoDimensionalMultithreadDiffusion.cuh"
 #include "host_math_helper.h"
 #include "GrowthRateCalculation.cuh"
+#include "diffusion_coefficients_recalculation_kernel.cuh"
 
 #include <iostream>
 #include <fstream>
@@ -36,12 +37,12 @@ void float_vdf_diffusion_test(PhysicalParameters<float> params, Axis<float> vpar
 	}
 
 	HostTable<float> h_dfc_vperp_vperp(vparall_size, vperp_size);
-	HostTable<float> h_dfc_vparall_vperp(vparall_size, vperp_size);
 	HostTable<float> h_dfc_vparall_vparall(vperp_size, vparall_size); //transposed
+	HostTable<float> h_dfc_vparall_vperp(vparall_size, vperp_size);
 	HostTable<float> h_dfc_vperp_vparall(vperp_size, vparall_size);   //transposed
 	HostDataLine<float> h_k_betta(vparall_size);
 	HostDataLine<float> h_dispersion_derive(vparall_size);
-	diffusion_coefficients_calculation<float>(
+	initial_diffusion_coefficients_calculation<float>(
 		params, 
 		vparall_axis, vperp_axis, 
 		vparall_size, vperp_size,
@@ -90,7 +91,13 @@ void float_vdf_diffusion_test(PhysicalParameters<float> params, Axis<float> vpar
 
 	Device device(0);
 
-	
+	table::HostManagedDeviceTable<float> 
+		core_dfc_vperp_vperp(table::construct_from(h_dfc_vperp_vperp)),
+		core_dfc_vparall_vparall(table::construct_from(h_dfc_vparall_vparall)), //transposed
+		core_dfc_vparall_vperp(table::construct_from(h_dfc_vparall_vperp)),
+		core_dfc_vperp_vparall(table::construct_from(h_dfc_vperp_vparall))      //transposed
+	;
+	table::HostManagedDeviceDataLine<float> amplitude_spectrum(table::construct_from(h_amplitude_spectrum));
 
 	float rvperp = dt / math::pow<2u>(vspace.along.step), rvparall = dt / math::pow<2u>(vspace.perp.step), rmixed = std::sqrt(rvperp*rvparall);
 	diffusion::TwoDimensionalMultithreadDiffusion<32u, 256u, float>
@@ -104,17 +111,36 @@ void float_vdf_diffusion_test(PhysicalParameters<float> params, Axis<float> vpar
 	GrowthRateCalculation<float> growth_rate(vspace, h_k_betta, h_dispersion_derive);
 	if (true) {
 		growth_rate.recalculate(diffusion_solver.x_prev);
-		HostGridLine<float> growth_rate_grid(vspace.perp, construct_from(growth_rate.growth_rate));
+		HostDataLine<float> h_growth_rate(construct_from(growth_rate.growth_rate));
 		{
 			ofstream ascii_out;
 			ascii_out.exceptions(ios::failbit | ios::badbit);
 			ascii_out.precision(7); ascii_out.setf(ios::scientific, ios::floatfield);
 			ascii_out.open("./data/growth-rate-initial-test.txt");
 			for (unsigned idx = 0; idx != vparall_size; ++idx) {
-				ascii_out << h_k_betta(idx) << ' ' << h_dispersion_derive(idx) << ' ' << h_k_betta(idx) / params.betta_root_c << ' ' << growth_rate_grid.line(idx) << '\n';
+				ascii_out << h_k_betta(idx) << ' ' << h_dispersion_derive(idx) << ' ' << h_k_betta(idx) / params.betta_root_c << ' ' << h_growth_rate(idx) << '\n';
 			}
 		}
-		return;
+
+		for (unsigned idx = 0; idx != vparall_size; ++idx) {
+			h_amplitude_spectrum(idx) *= std::exp(h_growth_rate(idx) * 500);
+		}
+	}
+
+	//diffusion coefficients adjusment
+	{
+		table::HostManagedDeviceDataLine<float> amplitude_spectrum(table::construct_from(h_amplitude_spectrum));
+		whfi::device::diffusion_coefficients_recalculation_kernel<<<vparall_size/512,512>>> (
+			core_dfc_vperp_vperp.table(),
+			core_dfc_vparall_vparall.table(),
+			core_dfc_vparall_vperp.table(),
+			core_dfc_vperp_vparall.table(),
+			amplitude_spectrum.line(),
+			diffusion_solver.along_dfc.table(),
+			diffusion_solver.perp_dfc.table(),
+			diffusion_solver.along_mixed_dfc.table(),
+			diffusion_solver.perp_mixed_dfc.table()
+		);
 	}
 
 	for (unsigned iter_cnt = 0; iter_cnt != iteration; ++iter_cnt)
@@ -144,6 +170,20 @@ void float_vdf_diffusion_test(PhysicalParameters<float> params, Axis<float> vpar
 			ascii_os.precision(7); ascii_os.setf(ios::scientific, ios::floatfield);
 			ascii_os.open("./data/two-dimensional-mixed-term-diff-vdf-test.txt");
 			ascii_os << h_diff_vdf_grid;
+		}
+
+		if (true) {
+			growth_rate.recalculate(diffusion_solver.x_prev);
+			HostGridLine<float> growth_rate_grid(vspace.perp, construct_from(growth_rate.growth_rate));
+			{
+				ofstream ascii_out;
+				ascii_out.exceptions(ios::failbit | ios::badbit);
+				ascii_out.precision(7); ascii_out.setf(ios::scientific, ios::floatfield);
+				ascii_out.open("./data/growth-rate-result-test.txt");
+				for (unsigned idx = 0; idx != vparall_size; ++idx) {
+					ascii_out << h_k_betta(idx) << ' ' << h_dispersion_derive(idx) << ' ' << h_k_betta(idx) / params.betta_root_c << ' ' << growth_rate_grid.line(idx) << '\n';
+				}
+			}
 		}
 	}
 	std::cout << "data exported" << std::endl;

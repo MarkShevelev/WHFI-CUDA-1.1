@@ -14,7 +14,8 @@
     <ClInclude Include="AnalyticalMoments.h" />
     <ClInclude Include="compensation_matrix_calculation_kernel.cuh" />
     <ClInclude Include="DeviceDataLine.cuh" />
-    <ClInclude Include="diffusion_coefficients_calculation.cuh" />
+    <ClInclude Include="diffusion_coefficients_recalculation_kernel.cuh" />
+    <ClInclude Include="initial_diffusion_coefficients_calculation.cuh" />
     <ClInclude Include="DispersionRelationDerivative.h" />
     <ClInclude Include="first_moment_kernel.cuh" />
     <ClInclude Include="GrowthRateCalculation.cuh" />
