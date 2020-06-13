@@ -19,7 +19,7 @@ int main() {
 		auto params = init_parameters(0.85f, 1.0f / 0.85f, 0.25f, -9.f);
 		Axis<float> vparall_axis = { -16.3f, 3e-2f }; unsigned vparall_size = 512;
 		Axis<float> vperp_axis = { -3e-2f, 3e-2f }; unsigned vperp_size = 1024;
-		float_vdf_diffusion_test(params, vparall_axis, vperp_axis, vparall_size, vperp_size, 1.e-3f, 10000);
+		float_vdf_diffusion_test(params, vparall_axis, vperp_axis, vparall_size, vperp_size, 1.e-2f, 1000);
 	} 
 	catch(std::exception const &ex) {
 		cout << ex.what() << endl;

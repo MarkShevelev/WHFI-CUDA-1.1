@@ -30,12 +30,8 @@ void float_vdf_diffusion_test(PhysicalParameters<float> params, Axis<float> vpar
 	Space<float> vspace = { vparall_axis,vperp_axis };
 	Space<float> vspace_transposed = { vperp_axis ,vparall_axis };
 	auto h_vdf_grid = calculate_muVDF(params, vspace, vparall_size, vperp_size);
-
+	
 	HostDataLine<float> h_amplitude_spectrum(vparall_size);
-	for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
-		h_amplitude_spectrum(vparall_idx) = 1.0e-3f;
-	}
-
 	HostTable<float> h_dfc_vperp_vperp(vparall_size, vperp_size);
 	HostTable<float> h_dfc_vparall_vparall(vperp_size, vparall_size); //transposed
 	HostTable<float> h_dfc_vparall_vperp(vparall_size, vperp_size);
@@ -123,8 +119,9 @@ void float_vdf_diffusion_test(PhysicalParameters<float> params, Axis<float> vpar
 		}
 
 		for (unsigned idx = 0; idx != vparall_size; ++idx) {
-			h_amplitude_spectrum(idx) *= std::exp(h_growth_rate(idx) * 500);
+			h_amplitude_spectrum(idx) = 1.0e-5f * std::exp(h_growth_rate(idx) * dt * 100000);
 		}
+		
 	}
 
 	//diffusion coefficients adjusment
@@ -153,7 +150,7 @@ void float_vdf_diffusion_test(PhysicalParameters<float> params, Axis<float> vpar
 
 		for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx)
 			for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx)
-				h_diff_vdf_grid.table(vparall_idx, vperp_idx) = 1.0f - h_vdf_grid.table(vparall_idx, vperp_idx) / h_result_vdf_grid.table(vparall_idx, vperp_idx);
+				h_diff_vdf_grid.table(vparall_idx, vperp_idx) = h_result_vdf_grid.table(vparall_idx, vperp_idx) / h_vdf_grid.table(vparall_idx, vperp_idx) - 1.0f;//1.0f - h_vdf_grid.table(vparall_idx, vperp_idx) / h_result_vdf_grid.table(vparall_idx, vperp_idx);
 		{
 			ofstream ascii_os;
 			ascii_os.exceptions(ios::badbit | ios::failbit);
