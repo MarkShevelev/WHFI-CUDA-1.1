@@ -117,7 +117,7 @@ namespace iki { namespace whfi {
 				}
 			}
 		}
-		table::HostManagedDeviceDataLine<float> amplitude_spectrum(table::construct_from(h_amplitude_spectrum));
+		table::HostManagedDeviceDataLine<T> amplitude_spectrum(table::construct_from(h_amplitude_spectrum));
 
 		//diffusion coefficients multiplication
 		{
