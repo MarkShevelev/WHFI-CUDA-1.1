@@ -20,10 +20,10 @@ namespace iki {	namespace diffusion {
 	public:
 		TwoDimensionalMultithreadDiffusion(
 			HostTable const &init_host, 
-			HostTable const &perp_dfc_host, T perp_r, 
-			HostTable const &along_dfc_host, T along_r, 
-			HostTable const &perp_mixed_dfc_host,  //along perp
+			HostTable const &along_dfc_host, T along_r,
+			HostTable const &perp_dfc_host, T perp_r,            //transposed
 			HostTable const &along_mixed_dfc_host, //perp along
+			HostTable const &perp_mixed_dfc_host,  //along perp  //transposed
 			T mixed_r
 		):
 			a(init_host.row_count, init_host.row_size), 
@@ -32,9 +32,13 @@ namespace iki {	namespace diffusion {
 			d(init_host.row_count, init_host.row_size), 
 			x_prev_transposed(init_host.row_size, init_host.row_count),
 			x_next_transposed(init_host.row_size, init_host.row_count),
-			x_prev(table::construct_from(init_host)), x_next(table::construct_from(init_host)),
-			perp_dfc(table::construct_from(perp_dfc_host)), along_dfc(table::construct_from(along_dfc_host)), perp_mixed_dfc(table::construct_from(perp_mixed_dfc_host)), along_mixed_dfc(table::construct_from(along_mixed_dfc_host)), 
-			perp_r(perp_r), along_r(along_r), mixed_r(mixed_r) {
+			x_prev(table::construct_from(init_host)),
+			x_next(table::construct_from(init_host)),
+			along_dfc(table::construct_from(along_dfc_host)), along_r(along_r), 
+			perp_dfc(table::construct_from(perp_dfc_host)), perp_r(perp_r),
+			along_mixed_dfc(table::construct_from(along_mixed_dfc_host)),
+			perp_mixed_dfc(table::construct_from(perp_mixed_dfc_host)), mixed_r(mixed_r) 
+		{
 			cudaError_t cudaStatus;
 			if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 				throw DeviceError("TwoDimensionalMultithreadDiffusion construction: ", cudaStatus);
