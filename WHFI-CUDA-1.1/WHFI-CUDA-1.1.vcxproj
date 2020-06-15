@@ -11,11 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="amplitude_recalculation_kernel.cuh" />
     <ClInclude Include="AnalyticalMoments.h" />
     <ClInclude Include="compensation_matrix_calculation_kernel.cuh" />
     <ClInclude Include="DeviceDataLine.cuh" />
     <ClInclude Include="diffusion_coefficients_recalculation_kernel.cuh" />
-    <ClInclude Include="initial_diffusion_coefficients_calculation.cuh" />
+    <ClInclude Include="initial_diffusion_coefficients_calculation.h" />
     <ClInclude Include="DispersionRelationDerivative.h" />
     <ClInclude Include="first_moment_kernel.cuh" />
     <ClInclude Include="GrowthRateCalculation.cuh" />
@@ -42,6 +43,7 @@
     <ClInclude Include="PhysicalParameters.h" />
     <ClInclude Include="ResonantVelocitySolver.h" />
     <ClInclude Include="step_solve.h" />
+    <ClInclude Include="template_vdf_diffusion.cuh" />
     <ClInclude Include="thomson_sweep_kernel.cuh" />
     <ClInclude Include="transpose.cuh" />
     <ClInclude Include="TwoDimensionalMultithreadDiffusion.cuh" />
@@ -57,7 +59,6 @@
     <CudaCompile Include="MainTest.cu" />
     <CudaCompile Include="ResonantVelocityCalculationTest.cu" />
     <CudaCompile Include="MomentsTest.cu" />
-    <CudaCompile Include="VDFDiffusionTest.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceMemory.cpp" />

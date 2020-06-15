@@ -162,14 +162,20 @@
     <ClInclude Include="GrowthRateCalculation.cuh">
       <Filter>WHFI\GrowthRate</Filter>
     </ClInclude>
-    <ClInclude Include="initial_diffusion_coefficients_calculation.cuh">
-      <Filter>WHFI</Filter>
-    </ClInclude>
     <ClInclude Include="AnalyticalMoments.h">
       <Filter>WHFI\VDF</Filter>
     </ClInclude>
     <ClInclude Include="diffusion_coefficients_recalculation_kernel.cuh">
       <Filter>WHFI</Filter>
+    </ClInclude>
+    <ClInclude Include="template_vdf_diffusion.cuh">
+      <Filter>WHFI</Filter>
+    </ClInclude>
+    <ClInclude Include="initial_diffusion_coefficients_calculation.h">
+      <Filter>WHFI</Filter>
+    </ClInclude>
+    <ClInclude Include="amplitude_recalculation_kernel.cuh">
+      <Filter>WHFI\GrowthRate\Device</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -189,9 +195,6 @@
       <Filter>Test</Filter>
     </CudaCompile>
     <CudaCompile Include="MainTest.cu" />
-    <CudaCompile Include="VDFDiffusionTest.cu">
-      <Filter>Test</Filter>
-    </CudaCompile>
     <CudaCompile Include="DiffusionTest.cu">
       <Filter>Test</Filter>
     </CudaCompile>
