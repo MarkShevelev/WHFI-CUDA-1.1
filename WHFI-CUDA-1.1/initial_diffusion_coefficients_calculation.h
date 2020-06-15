@@ -33,7 +33,7 @@ void initial_diffusion_coefficients_calculation(
 	auto shift_vperp_axis = Axis<T>{ vperp_axis.begin + vperp_axis.step * 0.5f, vperp_axis.step };
 
 	{
-		auto zfunc = make_ZFunc(1.e-5f, 15.f);
+		auto zfunc = make_ZFunc<T>(T(1.e-5), T(15.));
 		auto wk_solver = ResonantVelocitySolver<T>(zfunc, params);
 		auto dr_w_derive = DispersionRelationOmegaDerivative<T>(zfunc, params);
 		auto dr_k_derive = DispersionRelationKDerivative<T>(zfunc, params);
