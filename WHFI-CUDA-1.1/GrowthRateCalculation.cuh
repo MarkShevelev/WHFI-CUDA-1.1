@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DeviceError.h"
 #include "DeviceTable.cuh"
 #include "HostManagedDeviceTable.cuh"
 #include "DeviceDataLine.cuh"
@@ -30,18 +31,26 @@ namespace iki { namespace whfi {
 		{ }
 
 		void recalculate(table::HostManagedDeviceTable<T> const &vdf_table) {
+			cudaError_t cudaStatus;
+
 			dim3 threads(512), blocks((vdf_table.row_count + threads.x - 1) / threads.x);
 			device::zero_moment_kernel<<<blocks, threads>>>(
 				vdf_table.table(),
 				vspace.along.begin, vspace.along.step, 
 				zero_moment.line()
 			);
+			cudaDeviceSynchronize();
+			if (cudaSuccess != (cudaStatus = cudaGetLastError()))
+				throw DeviceError("GrowthRate recalculation.zero_moment: ", cudaStatus);
 
 			device::first_moment_kernel<<<blocks, threads>>>(
 				vdf_table.table(),
 				vspace.along.begin, vspace.along.step,
 				first_moment.line()
 			);
+			cudaDeviceSynchronize();
+			if (cudaSuccess != (cudaStatus = cudaGetLastError()))
+				throw DeviceError("GrowthRate recalculation.first_moment: ", cudaStatus);
 
 			device::growth_rate_kernel<<<blocks, threads>>>(
 				zero_moment.line(),
@@ -51,6 +60,9 @@ namespace iki { namespace whfi {
 				vspace.perp.step,
 				growth_rate.line()
 			);
+			cudaDeviceSynchronize();
+			if (cudaSuccess != (cudaStatus = cudaGetLastError()))
+				throw DeviceError("GrowthRate recalculation.growth_rate: ", cudaStatus);
 		}
 
 		grid::Space<T> const vspace;
