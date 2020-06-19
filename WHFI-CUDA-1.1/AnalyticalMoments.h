@@ -22,7 +22,7 @@ namespace iki { namespace whfi {
 		}
 
 		T GDerive(T vparall) const {
-			return -(vparall - p.bulk_to_alfven_c) * p.nc * std::exp(-math::pow<2>(vparall - p.bulk_to_term_c) / T(2)) - (vparall * std::sqrt(p.TcTh_ratio) - p.bulk_to_term_h) * p.nh * exp(-math::pow<2>(vparall * std::sqrt(p.TcTh_ratio) - p.bulk_to_term_h) / T(2));
+			return - (vparall - p.bulk_to_term_c) * p.nc * std::exp(-math::pow<2>(vparall - p.bulk_to_term_c) / T(2)) - (vparall * std::sqrt(p.TcTh_ratio) - p.bulk_to_term_h) *  p.nh * exp(-math::pow<2>(vparall * std::sqrt(p.TcTh_ratio) - p.bulk_to_term_h) / T(2));
 		}
 
 	private:
