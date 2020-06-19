@@ -39,7 +39,7 @@ namespace iki { namespace whfi {
 	void vdf_diffusion(
 		PhysicalParameters<T> params,
 		grid::Space<T> vspace, unsigned vparall_size, unsigned vperp_size,
-		T initial_amplitude_flat, T amplitude_amplification_time,
+		T noise_amplitude, T amplitude_amplification_time,
 		unsigned iterations, T dt,
 		bool log_initial_growth_rate, bool log_result_growth_rate,
 		bool log_initial_amplitude, bool log_result_amplitude,
@@ -105,7 +105,7 @@ namespace iki { namespace whfi {
 		//amplitude premultiplication
 		{
 			for (unsigned idx = 0; idx != h_amplitude_spectrum.size; ++idx) {
-				h_amplitude_spectrum(idx) = initial_amplitude_flat * std::exp(2 * h_growth_rate(idx) * amplitude_amplification_time);
+				h_amplitude_spectrum(idx) = h_growth_rate(idx) > T(0.) ? noise_amplitude * std::exp(2 * h_growth_rate(idx) * amplitude_amplification_time) : noise_amplitude;
 			}
 
 			if (log_initial_amplitude) {
@@ -139,7 +139,7 @@ namespace iki { namespace whfi {
 		}
 
 		//log initial diffusion coefficients
-		if(log_initial_diffusion_coefficients) {
+		if(false && log_initial_diffusion_coefficients) {
 			table::device_to_host_transfer(diffusion_solver.along_dfc, h_core_dfc_vperp_vperp.table);
 			table::device_to_host_transfer(diffusion_solver.perp_dfc, h_core_dfc_vparall_vparall.table);
 			table::device_to_host_transfer(diffusion_solver.along_mixed_dfc, h_core_dfc_vparall_vperp.table);
@@ -184,16 +184,16 @@ namespace iki { namespace whfi {
 
 			{
 				cudaError_t cudaStatus;
-				whfi::device::amplitude_recalculation_kernel << <vparall_size / 512, 512 >> > (growth_rate.growth_rate.line(), amplitude_spectrum.line(), dt);
+				whfi::device::amplitude_recalculation_kernel<<<vparall_size / 512, 512>>> (growth_rate.growth_rate.line(), amplitude_spectrum.line(), dt, noise_amplitude);
 				cudaDeviceSynchronize();
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Amplitude spectrum recalculation kernel failed: ", cudaStatus);
 			}
 
 			//diffusion coefficients multiplication
-			{
+			if(true) {
 				cudaError_t cudaStatus;
-				whfi::device::diffusion_coefficients_recalculation_kernel << <vparall_size / 512, 512 >> > (
+				whfi::device::diffusion_coefficients_recalculation_kernel<<<vparall_size / 512, 512>>>(
 					core_dfc_vperp_vperp.table(),
 					core_dfc_vparall_vparall.table(),
 					core_dfc_vparall_vperp.table(),
@@ -207,6 +207,19 @@ namespace iki { namespace whfi {
 				cudaDeviceSynchronize();
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Diffusion coefficients recalculation kernel failed: ", cudaStatus);
+			}
+			std::cout << '\r' << cnt;
+			if (true && 0 != cnt && 0 == cnt % 10000) {
+				std::ostringstream s_os; s_os << "./data/growth-rate-" << cnt << "-intermidiate.txt";
+				table::device_to_host_transfer(growth_rate.growth_rate, h_growth_rate);
+				{
+					std::ofstream ascii_os;
+					ascii_os << exceptional_scientific;
+					ascii_os.open(s_os.str());
+					for (unsigned idx = 0; idx != h_growth_rate.size; ++idx) {
+						ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_growth_rate(idx) << '\n';
+					}
+				}
 			}
 		}
 
