@@ -58,11 +58,11 @@ void float_moments_growth_rate_test(PhysicalParameters<float> params, Axis<float
 		host_to_device_transfer(dispersion_derive_host, dispersion_derive);
 	}
 
-	AnalyticalMoments<float> analytical_moments(params);
+	AnalyticalMomentsTable<float> analytical_moments_table(params);
 	//zero_moment
-	auto g = analytical_moments.g(vparall_axis.begin, vparall_axis.step, vdf_grid.table.row_count); 
+	auto g = analytical_moments_table.g(vparall_axis, vdf_grid.table.row_count); 
 	//first_moment
-	auto G = analytical_moments.G(vparall_axis.begin, vparall_axis.step, vdf_grid.table.row_count);
+	auto G = analytical_moments_table.G(vparall_axis, vdf_grid.table.row_count);
 
 	//zero moment calculation
 	{
