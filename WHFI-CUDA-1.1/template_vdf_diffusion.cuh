@@ -15,6 +15,7 @@
 #include "initial_diffusion_coefficients_calculation.h"
 #include "diffusion_coefficients_recalculation_kernel.cuh"
 #include "amplitude_recalculation_kernel.cuh"
+#include "neuman_boundary_condition.cuh"
 
 #include "GrowthRateCalculation.cuh"
 #include "TwoDimensionalMultithreadDiffusion.cuh"
@@ -179,12 +180,18 @@ namespace iki { namespace whfi {
 	
 		for (unsigned cnt = 0; cnt != iterations; ++cnt) {
 			diffusion_solver.step();
+			{
+				cudaError_t cudaStatus;
+				diffusion::device::perp_axis_max_boundary_kernel<<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
+				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
+					throw DeviceError("Boundary condition kernel failed: ", cudaStatus);
+			}
 
 			growth_rate.recalculate(diffusion_solver.x_prev);
 
 			{
 				cudaError_t cudaStatus;
-				whfi::device::amplitude_recalculation_kernel<<<vparall_size / 512, 512>>> (growth_rate.growth_rate.line(), amplitude_spectrum.line(), dt, noise_amplitude);
+				whfi::device::amplitude_recalculation_kernel<<<vparall_size / 512, 512>>> (growth_rate.growth_rate.line(), amplitude_spectrum.line(), dt, T(0.));
 				cudaDeviceSynchronize();
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Amplitude spectrum recalculation kernel failed: ", cudaStatus);
@@ -209,7 +216,7 @@ namespace iki { namespace whfi {
 					throw DeviceError("Diffusion coefficients recalculation kernel failed: ", cudaStatus);
 			}
 			std::cout << '\r' << cnt;
-			if (true && 0 != cnt && 0 == cnt % 10000) {
+			if (true && 0 != cnt && 0 == cnt % 1000) {
 				std::ostringstream s_os; s_os << "./data/growth-rate-" << cnt << "-intermidiate.txt";
 				table::device_to_host_transfer(growth_rate.growth_rate, h_growth_rate);
 				{
