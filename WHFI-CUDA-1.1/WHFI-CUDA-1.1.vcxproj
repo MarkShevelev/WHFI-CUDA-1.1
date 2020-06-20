@@ -14,6 +14,7 @@
     <ClInclude Include="amplitude_recalculation_kernel.cuh" />
     <ClInclude Include="AnalyticalMoments.h" />
     <ClInclude Include="compensation_matrix_calculation_kernel.cuh" />
+    <ClInclude Include="construct_vparall_axis.h" />
     <ClInclude Include="DeviceDataLine.cuh" />
     <ClInclude Include="diffusion_coefficients_recalculation_kernel.cuh" />
     <ClInclude Include="initial_diffusion_coefficients_calculation.h" />
@@ -40,6 +41,7 @@
     <ClInclude Include="HostTable.h" />
     <ClInclude Include="HostTableTranspose.h" />
     <ClInclude Include="HostManagedDeviceTableTranspose.cuh" />
+    <ClInclude Include="neuman_boundary_condition.cuh" />
     <ClInclude Include="PhysicalParameters.h" />
     <ClInclude Include="ResonantVelocitySolver.h" />
     <ClInclude Include="step_solve.h" />
@@ -52,6 +54,7 @@
     <ClInclude Include="ZFunc.h" />
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="AutomatedVparallAxisTest.cu" />
     <CudaCompile Include="Device.cpp" />
     <CudaCompile Include="DeviceError.cpp" />
     <CudaCompile Include="DiffusionCoefficientTest.cu" />

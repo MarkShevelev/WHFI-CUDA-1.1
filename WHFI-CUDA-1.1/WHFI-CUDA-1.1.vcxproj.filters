@@ -177,6 +177,12 @@
     <ClInclude Include="amplitude_recalculation_kernel.cuh">
       <Filter>WHFI\GrowthRate\Device</Filter>
     </ClInclude>
+    <ClInclude Include="construct_vparall_axis.h">
+      <Filter>WHFI</Filter>
+    </ClInclude>
+    <ClInclude Include="neuman_boundary_condition.cuh">
+      <Filter>Diffusion\Device\Kernel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="DeviceError.cpp">
@@ -196,6 +202,9 @@
     </CudaCompile>
     <CudaCompile Include="MainTest.cu" />
     <CudaCompile Include="DiffusionTest.cu">
+      <Filter>Test</Filter>
+    </CudaCompile>
+    <CudaCompile Include="AutomatedVparallAxisTest.cu">
       <Filter>Test</Filter>
     </CudaCompile>
   </ItemGroup>
