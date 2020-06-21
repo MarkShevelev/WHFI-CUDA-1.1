@@ -18,6 +18,6 @@ namespace iki { namespace diffusion { namespace device {
 
 		if (0 == row_idx || x_prev.row_count - 1 == row_idx || 0 == elm_idx || x_prev.row_size - 1 == elm_idx) return;
 
-		d(row_idx, elm_idx) += 0.5 * mixed_r * (central_mixed_term_discretization(x_next,along_mixed_dfc,row_idx,elm_idx) - central_mixed_term_discretization(x_prev, along_mixed_dfc, row_idx, elm_idx));
+		d(row_idx, elm_idx) += 0.5 * mixed_r * (central_mixed_term_discretization(x_next, along_mixed_dfc, row_idx, elm_idx) - central_mixed_term_discretization(x_prev, along_mixed_dfc, row_idx, elm_idx));
 	}
 }/*device*/ }/*diffusion*/ }/*iki*/

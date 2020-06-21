@@ -12,7 +12,7 @@ namespace iki { namespace diffusion { namespace device {
 		table::device::DeviceTable<T> a, table::device::DeviceTable<T> b, table::device::DeviceTable<T> c, table::device::DeviceTable<T> d,
 		table::device::DeviceTable<T> const x_prev, table::device::DeviceTable<T> const x_next,
 		table::device::DeviceTable<T> const along_dfc, T along_r, 
-		table::device::DeviceDataLine<T> const perp_mixed_dfc, T mixed_r
+		table::device::DeviceTable<T> const perp_mixed_dfc, T mixed_r
 	) {
 		unsigned row_idx = blockIdx.x * TILE_SIZE + threadIdx.x;
 		unsigned elm_idx = blockIdx.y * TILE_SIZE + threadIdx.y;
@@ -24,6 +24,6 @@ namespace iki { namespace diffusion { namespace device {
 		c(row_idx, elm_idx) = -0.5 * along_r * along_dfc(row_idx, elm_idx) - 0.5 * 0.25 * mixed_r * (perp_mixed_dfc(row_idx + 1, elm_idx) - perp_mixed_dfc(row_idx - 1, elm_idx));
 		d(row_idx, elm_idx) = x_next(row_idx, elm_idx)
 			- 0.5 * along_r * along_diagonal_discretization(x_prev,along_dfc,row_idx,elm_idx)
-			- 0.5 * mixed_r * ((perp_mixed_dfc(row_idx + 1, elm_idx) - perp_mixed_dfc(row_idx - 1, elm_idx)) * (x_prev(row_idx,elm_idx+1) - x_prev(row_idx,elm_idx-1));
+			- 0.5 * mixed_r * (perp_mixed_dfc(row_idx + 1, elm_idx) - perp_mixed_dfc(row_idx - 1, elm_idx)) * (x_prev(row_idx,elm_idx+1) - x_prev(row_idx,elm_idx-1));
 	}
 }/*device*/ }/*diffusion*/ }/*iki*/

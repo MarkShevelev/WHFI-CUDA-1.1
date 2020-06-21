@@ -6,6 +6,7 @@
 #include "HostManagedDeviceTable.cuh"
 #include "HostDeviceTransfer.cuh"
 #include "HostTableTranspose.h"
+#include "neuman_boundary_condition.cuh"
 
 #include <iostream>
 #include <fstream>
@@ -22,7 +23,7 @@ void fdiffusion_test() {
 	using namespace table;
 	using namespace grid;
 	try {
-		unsigned vparall_size = 256, vperp_size = 512;
+		unsigned vparall_size = 512, vperp_size = 512;
 		Space<float> v_space{ Axis<float>{ -15.f, 1.e-3f }, Axis<float>{ 0.f, 1.e-3f } };
 		Space<float> v_space_transposed{ Axis<float>{ 0.f, 1.e-3f }, Axis<float>{ -15.f, 1.e-3f } };
 		HostGrid<float> vdf_grid(v_space, vparall_size, vperp_size);
@@ -41,13 +42,24 @@ void fdiffusion_test() {
 		diffusion::TwoDimensionalMultithreadDiffusion<32u, 256u, float>
 			diffusion_solver(
 				vdf_grid.table,
-				vparall_dfc_grid.table, 1.0f,
 				vperp_dfc_grid.table, 1.0f,
-				vparall_mixed_dfc_grid.table, vperp_mixed_dfc_grid.table, 1.0f
+				vparall_dfc_grid.table, 1.0f,
+				vperp_mixed_dfc_grid.table, vparall_mixed_dfc_grid.table,  0.0f
 			);
 
-		for (unsigned iter_cnt = 0; iter_cnt != 1000; ++iter_cnt)
+		for (unsigned iter_cnt = 0; iter_cnt != 1000; ++iter_cnt) {
 			diffusion_solver.step();
+			if (false){
+				cudaError_t cudaStatus;
+				diffusion::device::perp_axis_max_boundary_kernel <<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
+				diffusion::device::perp_axis_min_boundary_kernel <<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
+				diffusion::device::along_axis_max_boundary_kernel <<<vparall_size / 256, 256>>> (diffusion_solver.x_prev.table());
+				diffusion::device::along_axis_min_boundary_kernel <<<vparall_size / 256, 256>>> (diffusion_solver.x_prev.table());
+				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
+					throw DeviceError("Boundary condition kernel failed: ", cudaStatus);
+			}
+
+		}
 
 		{
 			HostGrid<float> output_grid(v_space, construct_from(diffusion_solver.x_prev));
@@ -84,7 +96,7 @@ void along_dfc_field_init(iki::grid::HostGrid<float> &dfc_grid) {
 
 	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)
 		for (unsigned elm_idx = 0; elm_idx != table.row_size; ++elm_idx)
-			table(row_idx,elm_idx) = 1.f;
+			table(row_idx,elm_idx) = 2.f;
 }
 
 void perp_dfc_field_init(iki::grid::HostGrid<float> &dfc_grid) {
@@ -92,19 +104,19 @@ void perp_dfc_field_init(iki::grid::HostGrid<float> &dfc_grid) {
 
 	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)
 		for (unsigned elm_idx = 0; elm_idx != table.row_size; ++elm_idx)
-			table(row_idx, elm_idx) = 1.f;
+			table(row_idx, elm_idx) = 0.f;
 }
 
 void along_mixed_dfc_field_int(iki::grid::HostGrid<float> &dfc_grid) {
 	auto &table = dfc_grid.table;
 	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)
 		for (unsigned elm_idx = 0; elm_idx != table.row_size; ++elm_idx)
-			table(row_idx, elm_idx) = 1.f;
+			table(row_idx, elm_idx) = 0.f;
 }
 
 void perp_mixed_dfc_field_int(iki::grid::HostGrid<float> &dfc_grid) {
 	auto &table = dfc_grid.table;
 	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)
 		for (unsigned elm_idx = 0; elm_idx != table.row_size; ++elm_idx)
-			table(row_idx, elm_idx) = 1.f;
+			table(row_idx, elm_idx) = 0.f;
 }

@@ -13,11 +13,12 @@ using namespace iki::whfi;
 using namespace iki::table;
 using namespace iki::grid;
 
-void float_automated_vparall_axis_test(PhysicalParameters<float> params, unsigned vparall_size, float begin, float end);
+void fdiffusion_test();
 
 int main() {
 	try {
-		if (true) {
+		fdiffusion_test();
+		/*if (false) {
 			auto params = init_parameters(0.85f, 1.0f / 0.85f, 0.25f, -9.f);
 			unsigned vparall_size = 512; unsigned vperp_size = 2 * 2048;
 			Axis<float> vparall_axis = construct_vparall_axis<float>(params,make_ZFunc<float>(1.e-5f, 15.f), vparall_size, -9.f, -0.96f);
@@ -46,7 +47,7 @@ int main() {
 				true,
 				true,
 				true);
-		}
+		}*/
 	} 
 	catch(std::exception const &ex) {
 		cout << ex.what() << endl;
