@@ -75,7 +75,8 @@ namespace iki {	namespace diffusion {
 			device::correction_step_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>>(
 				a.table(), b.table(), c.table(), d.table(),
 				x_prev_transposed.table(), x_next_transposed.table(),
-				perp_dfc.table(), perp_r
+				perp_dfc.table(), perp_r,
+				perp_mixed_dfc.table(), mixed_r
 			);
 			cudaDeviceSynchronize();
 			if (cudaSuccess != (cudaStatus = cudaGetLastError()))
@@ -109,7 +110,7 @@ namespace iki {	namespace diffusion {
 			device::compensation_matrix_calculation_kernel<TILE_SIZE><<<gridDim, blockDim>>>(
 				d.table(),
 				x_prev.table(), x_next.table(),
-				along_mixed_dfc.table(), perp_mixed_dfc.table(), mixed_r
+				along_mixed_dfc.table(), mixed_r
 			);
 			cudaDeviceSynchronize();
 			if (cudaSuccess != (cudaStatus = cudaGetLastError()))
