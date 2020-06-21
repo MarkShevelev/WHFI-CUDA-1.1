@@ -183,13 +183,14 @@ namespace iki { namespace whfi {
 			{
 				cudaError_t cudaStatus;
 				diffusion::device::perp_axis_max_boundary_kernel<<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
+				diffusion::device::perp_axis_min_boundary_kernel<<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Boundary condition kernel failed: ", cudaStatus);
 			}
 
 			growth_rate.recalculate(diffusion_solver.x_prev);
 
-			{
+			if(false){
 				cudaError_t cudaStatus;
 				whfi::device::amplitude_recalculation_kernel<<<vparall_size / 512, 512>>> (growth_rate.growth_rate.line(), amplitude_spectrum.line(), dt, T(0.));
 				cudaDeviceSynchronize();
@@ -198,7 +199,7 @@ namespace iki { namespace whfi {
 			}
 
 			//diffusion coefficients multiplication
-			if(true) {
+			if(false) {
 				cudaError_t cudaStatus;
 				whfi::device::diffusion_coefficients_recalculation_kernel<<<vparall_size / 512, 512>>>(
 					core_dfc_vperp_vperp.table(),
