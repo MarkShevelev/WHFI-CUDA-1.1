@@ -19,13 +19,13 @@ int main() {
 	try {
 		if (true) {
 			auto params = init_parameters(0.85f, 1.0f / 0.85f, 0.25f, -9.f);
-			unsigned vparall_size = 512; unsigned vperp_size = 1024;
-			Axis<float> vparall_axis = construct_vparall_axis<float>(params,make_ZFunc<float>(1.e-5f, 15.f), vparall_size, -7.f, -0.96f);
-			Axis<float> vperp_axis = { -3e-2f, 3e-2f }; 
+			unsigned vparall_size = 512; unsigned vperp_size = 2 * 2048;
+			Axis<float> vparall_axis = construct_vparall_axis<float>(params,make_ZFunc<float>(1.e-5f, 15.f), vparall_size, -9.f, -0.96f);
+			Axis<float> vperp_axis = { -1.5e-2f, 1.5e-2f }; 
 			vdf_diffusion<float>(
 				params, Space<float>{vparall_axis, vperp_axis}, vparall_size, vperp_size,
-				1.0e-6f, 0.f, //amplitude, amplitude time
-				20000, 0.1f,  //iterations, dt
+				1.0e-5f, 0.f, //amplitude, amplitude time
+				10000, 0.1f,  //iterations, dt
 				true,
 				true,
 				true,
