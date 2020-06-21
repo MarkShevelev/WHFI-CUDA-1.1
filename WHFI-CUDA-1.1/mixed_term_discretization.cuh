@@ -28,4 +28,9 @@ namespace iki { namespace diffusion { namespace device {
 
 		return 0.25 * (right_q - left_q);
 	}
+
+	template <typename T>
+	__device__ T central_mixed_term_discretization(table::device::DeviceTable<T> x_curr, table::device::DeviceTable<T> mixed_dfc, unsigned row_idx, unsigned elm_idx) {
+		return 0.5 * mixed_dfc(row_idx, elm_idx) * (x_curr(row_idx + 1, elm_idx + 1) + x_curr(row_idx - 1, elm_idx - 1) - x_curr(row_idx + 1, elm_idx - 1) - x_curr(row_idx - 1, elm_idx + 1));
+	}
 }/*device*/ }/*diffusion*/ }/*iki*/
