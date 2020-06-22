@@ -21,11 +21,13 @@ namespace iki { namespace diffusion{ namespace device {
 
 		if (0 == row_idx || x_curr.row_count - 1 == row_idx || 0 == elm_idx || x_curr.row_size - 1 == elm_idx) return;
 
-		a(row_idx, elm_idx) = -0.5 * along_r * along_dfc(row_idx, elm_idx - 1) + 0.5 * 0.25 * mixed_r * (along_mixed_dfc(row_idx + 1, elm_idx) - along_mixed_dfc(row_idx - 1, elm_idx));
+		T adv_v = 0.25 * (along_mixed_dfc(row_idx + 1, elm_idx) - along_mixed_dfc(row_idx - 1, elm_idx));
+		a(row_idx, elm_idx) = -0.5 * along_r * along_dfc(row_idx, elm_idx - 1) + 0.5 *  mixed_r * adv_v;
 		b(row_idx, elm_idx) = T(1) + 0.5 * along_r * (along_dfc(row_idx, elm_idx-1) + along_dfc(row_idx, elm_idx));
-		c(row_idx, elm_idx) = -0.5 * along_r * along_dfc(row_idx, elm_idx) - 0.5 * 0.25 * mixed_r * (along_mixed_dfc(row_idx + 1, elm_idx) - along_mixed_dfc(row_idx - 1, elm_idx));
+		c(row_idx, elm_idx) = -0.5 * along_r * along_dfc(row_idx, elm_idx) - 0.5 * mixed_r * adv_v;
 		d(row_idx, elm_idx) = x_curr(row_idx, elm_idx)
 			+ 0.5 * along_r * along_diagonal_discretization(x_curr, along_dfc, row_idx, elm_idx)
+			+ 0.5 * mixed_r * adv_v
 			+ perp_r * perp_diagonal_discretization(x_curr, perp_dfc, row_idx, elm_idx)
 		    + mixed_r * central_mixed_term_discretization(x_curr, along_mixed_dfc, row_idx, elm_idx);
 	}
