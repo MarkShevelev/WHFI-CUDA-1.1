@@ -27,8 +27,8 @@ namespace iki { namespace diffusion{ namespace device {
 		c(row_idx, elm_idx) = -0.5 * along_r * along_dfc(row_idx, elm_idx) - 0.5 * mixed_r * adv_v;
 		d(row_idx, elm_idx) = x_curr(row_idx, elm_idx)
 			+ 0.5 * along_r * along_diagonal_discretization(x_curr, along_dfc, row_idx, elm_idx)
-			+ 0.5 * mixed_r * adv_v
+			+ 0.5 * mixed_r * adv_v * (x_curr(row_idx, elm_idx + 1) - x_curr(row_idx, elm_idx - 1))
 			+ perp_r * perp_diagonal_discretization(x_curr, perp_dfc, row_idx, elm_idx)
-		    + mixed_r * central_mixed_term_discretization(x_curr, along_mixed_dfc, row_idx, elm_idx);
+			+ mixed_r * central_mixed_term_discretization(x_curr, along_mixed_dfc, row_idx, elm_idx);
 	}
 }/*device*/ }/*diffusion*/ }/*iki*/
