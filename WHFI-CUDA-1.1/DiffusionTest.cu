@@ -23,7 +23,7 @@ void fdiffusion_test() {
 	using namespace table;
 	using namespace grid;
 	try {
-		unsigned vparall_size = 512, vperp_size = 512;
+		unsigned vparall_size = 256, vperp_size = 512;
 		Space<float> v_space{ Axis<float>{ -15.f, 1.e-3f }, Axis<float>{ 0.f, 1.e-3f } };
 		Space<float> v_space_transposed{ Axis<float>{ 0.f, 1.e-3f }, Axis<float>{ -15.f, 1.e-3f } };
 		HostGrid<float> vdf_grid(v_space, vparall_size, vperp_size);
@@ -44,10 +44,10 @@ void fdiffusion_test() {
 				vdf_grid.table,
 				vperp_dfc_grid.table, 1.0f,
 				vparall_dfc_grid.table, 1.0f,
-				vperp_mixed_dfc_grid.table, vparall_mixed_dfc_grid.table,  0.0f
+				vperp_mixed_dfc_grid.table, vparall_mixed_dfc_grid.table,  1.0f
 			);
 
-		for (unsigned iter_cnt = 0; iter_cnt != 1000; ++iter_cnt) {
+		for (unsigned iter_cnt = 0; iter_cnt != 250; ++iter_cnt) {
 			diffusion_solver.step();
 			if (false){
 				cudaError_t cudaStatus;
@@ -79,9 +79,9 @@ void v_field_init(iki::grid::HostGrid<float> &vdf_grid) {
 	auto &table = vdf_grid.table;
 
 	for (unsigned prp_idx = 0; prp_idx != table.row_size; ++prp_idx) {
-		float val = std::sin(2.f * 3.1415926535f / 128 * prp_idx);
+		float val = std::sin(2.f * 3.1415926535f / 73 * prp_idx);
 		for (unsigned prl_idx = 0; prl_idx != table.row_count; ++prl_idx)
-			table(prl_idx, prp_idx) = val * std::sin(2.f * 3.1415926535f / 128 * prl_idx);
+			table(prl_idx, prp_idx) = val * std::sin(2.f * 3.1415926535f / 51 * prl_idx);
 	}
 
 	for (unsigned prp_idx = 0; prp_idx != table.row_size; ++prp_idx)
@@ -96,7 +96,7 @@ void along_dfc_field_init(iki::grid::HostGrid<float> &dfc_grid) {
 
 	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)
 		for (unsigned elm_idx = 0; elm_idx != table.row_size; ++elm_idx)
-			table(row_idx,elm_idx) = 2.f;
+			table(row_idx,elm_idx) = 0.25f * 1.f;
 }
 
 void perp_dfc_field_init(iki::grid::HostGrid<float> &dfc_grid) {
@@ -104,19 +104,19 @@ void perp_dfc_field_init(iki::grid::HostGrid<float> &dfc_grid) {
 
 	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)
 		for (unsigned elm_idx = 0; elm_idx != table.row_size; ++elm_idx)
-			table(row_idx, elm_idx) = 0.f;
+			table(row_idx, elm_idx) = 0.25f * 4.f;
 }
 
 void along_mixed_dfc_field_int(iki::grid::HostGrid<float> &dfc_grid) {
 	auto &table = dfc_grid.table;
 	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)
 		for (unsigned elm_idx = 0; elm_idx != table.row_size; ++elm_idx)
-			table(row_idx, elm_idx) = 0.f;
+			table(row_idx, elm_idx) = 0.25f * 2.f;
 }
 
 void perp_mixed_dfc_field_int(iki::grid::HostGrid<float> &dfc_grid) {
 	auto &table = dfc_grid.table;
 	for (unsigned row_idx = 0; row_idx != table.row_count; ++row_idx)
 		for (unsigned elm_idx = 0; elm_idx != table.row_size; ++elm_idx)
-			table(row_idx, elm_idx) = 0.f;
+			table(row_idx, elm_idx) = 0.25f * 2.f;
 }
