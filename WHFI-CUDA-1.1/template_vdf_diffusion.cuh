@@ -49,6 +49,9 @@ namespace iki { namespace whfi {
 
 		grid::Space<T> vspace_transposed = vspace; vspace_transposed.swap_axes();
 		auto h_initial_vdf_grid = calculate_muVDF(params, vspace, vparall_size, vperp_size);
+		for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
+			h_initial_vdf_grid.table(vparall_idx, 0) = h_initial_vdf_grid.table(vparall_idx, 1);
+		}
 
 		grid::HostGrid<T>
 			h_result_vdf_grid(vspace, vparall_size, vperp_size),
@@ -180,10 +183,12 @@ namespace iki { namespace whfi {
 	
 		for (unsigned cnt = 0; cnt != iterations; ++cnt) {
 			diffusion_solver.step();
-			{
+			if(true) {
 				cudaError_t cudaStatus;
 				diffusion::device::perp_axis_max_boundary_kernel<<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
-				diffusion::device::perp_axis_min_boundary_kernel<<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
+				//diffusion::device::perp_axis_min_boundary_kernel<<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
+				//diffusion::device::along_axis_max_boundary_kernel << <vperp_size / 512, 512 >> > (diffusion_solver.x_prev.table());
+				diffusion::device::along_axis_min_boundary_kernel<<<vparall_size / 512, 512>>> (diffusion_solver.x_prev.table());
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Boundary condition kernel failed: ", cudaStatus);
 			}
@@ -234,11 +239,17 @@ namespace iki { namespace whfi {
 		//log result velocity distribution function
 		{
 			table::device_to_host_transfer(diffusion_solver.x_prev, h_result_vdf_grid.table);
+			grid::HostGrid<T> h_result_vdf_diff_grid(vspace, vparall_size, vperp_size);
 			grid::HostGrid<T> h_result_vdf_ratio_grid(vspace, vparall_size, vperp_size);
 			{
 				for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
-					for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx)
-						h_result_vdf_ratio_grid.table(vparall_idx, vperp_idx) = T(1.0) - h_initial_vdf_grid.table(vparall_idx, vperp_idx)/ h_result_vdf_grid.table(vparall_idx, vperp_idx);
+					for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx) {
+						auto diff = h_result_vdf_grid.table(vparall_idx, vperp_idx) - h_initial_vdf_grid.table(vparall_idx, vperp_idx);
+						h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) = diff;
+
+						auto summ = h_result_vdf_grid.table(vparall_idx, vperp_idx) + h_initial_vdf_grid.table(vparall_idx, vperp_idx);
+						h_result_vdf_ratio_grid.table(vparall_idx, vperp_idx) = diff / summ;
+					}
 				}
 			}
 			//vdf 
@@ -247,6 +258,14 @@ namespace iki { namespace whfi {
 				ascii_os << exceptional_scientific;
 				ascii_os.open("./data/vdf-result.txt");
 				ascii_os << h_result_vdf_grid;
+			}
+
+			//vdf diff
+			{
+				std::ofstream ascii_os;
+				ascii_os << exceptional_scientific;
+				ascii_os.open("./data/vdf-diff-result.txt");
+				ascii_os << h_result_vdf_diff_grid;
 			}
 
 			//vdf ratio
