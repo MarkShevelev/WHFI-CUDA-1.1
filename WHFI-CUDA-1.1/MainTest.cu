@@ -16,7 +16,7 @@ using namespace iki::grid;
 int main() {
 	try {
 		if (true) {
-			auto params = init_parameters(0.85f, 1.0f / 0.85f, 0.25f, -9.f);
+			auto params = init_parameters(0.95f, 1.0f / 0.89f, 1.f/6.f, -2.f);
 			unsigned vparall_size = 512; unsigned vperp_size = 2 * 2048;
 			Axis<float> vparall_axis = construct_vparall_axis<float>(params,make_ZFunc<float>(1.e-5f, 15.f), vparall_size, -9.f, -0.96f);
 			Axis<float> vperp_axis = { -0.75e-2f, 1.5e-2f }; 
