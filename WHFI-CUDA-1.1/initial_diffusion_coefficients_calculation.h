@@ -52,21 +52,31 @@ void initial_diffusion_coefficients_calculation(
 		}
 
 		//vparall vperp_shift
-		for (unsigned vparall_idx = 1; vparall_idx != vparall_size - 2; ++vparall_idx) {
-			dfc_vperp_vperp(vparall_idx, 0) = T(0.);
-			dfc_vparall_vperp(vparall_idx, 0) = T(0.);
-			for (unsigned vperp_idx = 1; vperp_idx != vperp_size; ++vperp_idx) {
+		for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
+			for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx) {
 				dfc_vperp_vperp(vparall_idx, vperp_idx) = shift_vperp_axis(vperp_idx) * R(2 * vparall_idx) / math::pow<2u>(double_k_betta(2 * vparall_idx));
-				dfc_vparall_vperp(vparall_idx, vperp_idx) = shift_vperp_axis(vperp_idx) / double_k_betta(2 * vparall_idx) * R(2 * vparall_idx);
+				dfc_vparall_vperp(vparall_idx, vperp_idx) = vperp_axis(vperp_idx) / double_k_betta(2 * vparall_idx) * R(2 * vparall_idx);
 			}
 		}
 
 		//vparall_shift vperp //transposed!!!
-		for (unsigned vperp_idx = 2; vperp_idx != vperp_size; ++vperp_idx) {
-			for (unsigned vparall_idx = 0; vparall_idx != vparall_size - 2; ++vparall_idx) {
+		for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx) {
+			for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
 				dfc_vparall_vparall(vperp_idx, vparall_idx) = vperp_axis(vperp_idx) * R(2 * vparall_idx + 1);
 				dfc_vperp_vparall(vperp_idx, vparall_idx) = vperp_axis(vperp_idx) / double_k_betta(2 * vparall_idx + 1) * R(2 * vparall_idx + 1);
 			}
+		}
+
+		//boundary conditions: zero flow through vperp = 0
+		for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
+			dfc_vperp_vperp(vparall_idx, 0) = dfc_vparall_vperp(vparall_idx, 0) = T(0);
+			dfc_vparall_vparall(0, vparall_idx) = dfc_vperp_vparall(0, vparall_idx) = T(0);
+		}
+
+		//boundary conditions: zero flow through vparall = max
+		for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx) {
+			dfc_vparall_vparall(vperp_idx, vparall_size - 2) = dfc_vperp_vparall(vperp_idx, vparall_size - 1) = T(0);
+			dfc_vperp_vperp(vparall_size - 1, vperp_idx) = dfc_vparall_vperp(vparall_size - 1, vperp_idx) = T(0);
 		}
 	}
 }
