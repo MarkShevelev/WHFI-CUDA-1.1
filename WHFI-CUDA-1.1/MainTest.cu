@@ -21,7 +21,7 @@ int main() {
 			auto params = init_parameters(0.85f, 1.0f / 0.85f, 0.25f, -9.f);
 			unsigned vparall_size = 512; unsigned vperp_size = 2 * 2048;
 			Axis<float> vparall_axis = construct_vparall_axis<float>(params,make_ZFunc<float>(1.e-5f, 15.f), vparall_size, -9.f, -0.96f);
-			Axis<float> vperp_axis = { -1.5e-2f, 1.5e-2f }; 
+			Axis<float> vperp_axis = { -0.75e-2f, 1.5e-2f }; 
 			vdf_diffusion<float>(
 				params, Space<float>{vparall_axis, vperp_axis}, vparall_size, vperp_size,
 				1.0e-5f, 0.f, //amplitude, amplitude time
