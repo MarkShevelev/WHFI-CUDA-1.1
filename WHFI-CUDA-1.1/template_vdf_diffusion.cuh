@@ -53,6 +53,14 @@ namespace iki { namespace whfi {
 			h_initial_vdf_grid.table(vparall_idx, 0) = h_initial_vdf_grid.table(vparall_idx, 1);
 		}
 
+		//export initial vdf
+		{
+			std::ofstream ascii_os;
+			ascii_os << exceptional_scientific;
+			ascii_os.open("./data/vdf-init.txt");
+			ascii_os << h_initial_vdf_grid;
+		}
+
 		grid::HostGrid<T>
 			h_result_vdf_grid(vspace, vparall_size, vperp_size),
 			h_core_dfc_vperp_vperp(vspace,vparall_size, vperp_size),
@@ -109,7 +117,7 @@ namespace iki { namespace whfi {
 		//amplitude premultiplication
 		{
 			for (unsigned idx = 0; idx != h_amplitude_spectrum.size; ++idx) {
-				h_amplitude_spectrum(idx) = h_growth_rate(idx) > T(0.) ? noise_amplitude * std::exp(2 * h_growth_rate(idx) * amplitude_amplification_time) : noise_amplitude;
+				h_amplitude_spectrum(idx) =  noise_amplitude * std::exp(2 * h_growth_rate(idx) * amplitude_amplification_time);
 			}
 
 			if (log_initial_amplitude) {
@@ -195,7 +203,7 @@ namespace iki { namespace whfi {
 
 			growth_rate.recalculate(diffusion_solver.x_prev);
 
-			if(false){
+			if(true){
 				cudaError_t cudaStatus;
 				whfi::device::amplitude_recalculation_kernel<<<vparall_size / 512, 512>>> (growth_rate.growth_rate.line(), amplitude_spectrum.line(), dt, T(0.));
 				cudaDeviceSynchronize();
@@ -204,7 +212,7 @@ namespace iki { namespace whfi {
 			}
 
 			//diffusion coefficients multiplication
-			if(false) {
+			if(true) {
 				cudaError_t cudaStatus;
 				whfi::device::diffusion_coefficients_recalculation_kernel<<<vparall_size / 512, 512>>>(
 					core_dfc_vperp_vperp.table(),
@@ -222,15 +230,30 @@ namespace iki { namespace whfi {
 					throw DeviceError("Diffusion coefficients recalculation kernel failed: ", cudaStatus);
 			}
 			std::cout << '\r' << cnt;
-			if (true && 0 != cnt && 0 == cnt % 1000) {
-				std::ostringstream s_os; s_os << "./data/growth-rate-" << cnt << "-intermidiate.txt";
-				table::device_to_host_transfer(growth_rate.growth_rate, h_growth_rate);
+			if (true && 0 != cnt && 0 == cnt % 10000) {
+				//growth rate
 				{
-					std::ofstream ascii_os;
-					ascii_os << exceptional_scientific;
-					ascii_os.open(s_os.str());
-					for (unsigned idx = 0; idx != h_growth_rate.size; ++idx) {
-						ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_growth_rate(idx) << '\n';
+					table::device_to_host_transfer(growth_rate.growth_rate, h_growth_rate);
+					{
+						std::ostringstream s_os; s_os << "./data/growth-rate-" << cnt << "-intermidiate.txt";
+						std::ofstream ascii_os;
+						ascii_os << exceptional_scientific;
+						ascii_os.open(s_os.str());
+						for (unsigned idx = 0; idx != h_growth_rate.size; ++idx) {
+							ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_growth_rate(idx) << '\n';
+						}
+					}
+				}
+
+				{
+					table::device_to_host_transfer(diffusion_solver.x_prev, h_result_vdf_grid.table);
+					//vdf 
+					{
+						std::ostringstream s_os; s_os << "./data/vdf-" << cnt << "-intermidiate.txt";
+						std::ofstream ascii_os;
+						ascii_os << exceptional_scientific;
+						ascii_os.open(s_os.str());
+						ascii_os << h_result_vdf_grid;
 					}
 				}
 			}
@@ -264,16 +287,8 @@ namespace iki { namespace whfi {
 			{
 				std::ofstream ascii_os;
 				ascii_os << exceptional_scientific;
-				ascii_os.open("./data/vdf-diff-result.txt");
+				ascii_os.open("./data/vdf-diff.txt");
 				ascii_os << h_result_vdf_diff_grid;
-			}
-
-			//vdf ratio
-			{
-				std::ofstream ascii_os;
-				ascii_os << exceptional_scientific;
-				ascii_os.open("./data/vdf-ratio-result.txt");
-				ascii_os << h_result_vdf_ratio_grid;
 			}
 		}
 
