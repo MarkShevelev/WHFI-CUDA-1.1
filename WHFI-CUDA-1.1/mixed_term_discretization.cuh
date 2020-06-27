@@ -11,8 +11,8 @@ namespace iki { namespace diffusion { namespace device {
 		T central_grad = T(0.5) * (x_curr(row_idx + 1, elm_idx) - x_curr(row_idx - 1, elm_idx));
 		T left_grad = T(0.5) * (x_curr(row_idx + 1, elm_idx - 1) - x_curr(row_idx - 1, elm_idx - 1));
 
-		T right_q = along_mixed_dfc(row_idx, elm_idx) * 0.5 * (right_grad + central_grad);
-		T left_q = along_mixed_dfc(row_idx, elm_idx-1) * 0.5 * (left_grad + central_grad);
+		T right_q = along_mixed_dfc(row_idx, elm_idx) * T(0.5) * (right_grad + central_grad);
+		T left_q = along_mixed_dfc(row_idx, elm_idx-1) * T(0.5) * (left_grad + central_grad);
 
 		return (right_q - left_q);
 	}
