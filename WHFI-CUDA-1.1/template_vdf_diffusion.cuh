@@ -42,7 +42,9 @@ namespace iki { namespace whfi {
 		grid::Space<T> vspace, unsigned vparall_size, unsigned vperp_size,
 		T noise_amplitude, T amplitude_amplification_time,
 		unsigned iterations, T dt,
+		bool log_initial_vdf,
 		bool log_initial_diffusion_coefficients,
+		bool dfc_recalculation,
 		bool log_growth_rate_intermidiate, unsigned gr_log_period,
 		bool log_amplitude_intermidiate, unsigned amp_log_period,
 		bool log_vdf_intermidiate, unsigned vdf_log_period
@@ -50,6 +52,16 @@ namespace iki { namespace whfi {
 
 		grid::Space<T> vspace_transposed = vspace; vspace_transposed.swap_axes();
 		auto h_initial_vdf_grid = calculate_muVDF(params, vspace, vparall_size, vperp_size);
+		for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx)
+			h_initial_vdf_grid.table(vparall_idx, 0) = h_initial_vdf_grid.table(vparall_idx, 1);
+
+		//log initial vdf
+		if (log_initial_vdf) {
+			std::ofstream ascii_os;
+			ascii_os << exceptional_scientific;
+			ascii_os.open("./data/vdf-initial.txt");
+			ascii_os << h_initial_vdf_grid;
+		}
 
 		grid::HostGrid<T>
 			h_result_vdf_grid(vspace, vparall_size, vperp_size),
@@ -189,7 +201,7 @@ namespace iki { namespace whfi {
 
 			//growth rate and amplitude recalculation
 			growth_rate.recalculate(diffusion_solver.x_prev);
-			if(true){
+			if(dfc_recalculation){
 				cudaError_t cudaStatus;
 				whfi::device::amplitude_recalculation_kernel<<<vparall_size / 512, 512>>> (growth_rate.growth_rate.line(), amplitude.line(), dt, T(0.));
 				cudaDeviceSynchronize();
@@ -294,7 +306,7 @@ namespace iki { namespace whfi {
 		}
 
 		//log result growth rate
-		if(log_result_growth_rate) {
+		{
 			table::device_to_host_transfer(growth_rate.growth_rate, h_growth_rate);
 			{
 				std::ofstream ascii_os;
@@ -307,14 +319,14 @@ namespace iki { namespace whfi {
 		}
 
 		//log result amplitude
-		if (log_result_amplitude) {
-			table::device_to_host_transfer(amplitude_spectrum, h_amplitude_spectrum);
+		{
+			table::device_to_host_transfer(amplitude, h_amplitude);
 			{
 				std::ofstream ascii_os;
 				ascii_os << exceptional_scientific;
 				ascii_os.open("./data/amplitude-spectrum-result.txt");
 				for (unsigned idx = 0; idx != h_growth_rate.size; ++idx) {
-					ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_amplitude_spectrum(idx) << '\n';
+					ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_amplitude(idx) << '\n';
 				}
 			}
 		}
