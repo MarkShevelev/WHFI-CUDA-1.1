@@ -24,12 +24,14 @@ int main() {
 			Axis<float> vperp_axis = { -1e-2f, 2e-2f }; 
 			vdf_diffusion<float>(
 				params, Space<float>{vparall_axis, vperp_axis}, vparall_size, vperp_size,
-				1.0e-10f, 0.f, //amplitude, amplitude time
-				10000, 1.f,  //iterations, dt
-				false,         //initial core dfc 
-				true, 1000,    //intermidiate growth rate
-				false, 1000,   //intermidiate amplitude
-				false, 1000    //intermidiate vdf
+				1.0e-5f, 0.f, //amplitude, amplitude time
+				2000, 1.f,  //iterations, dt
+				false,         //initial vdf export
+				false,         //initial core dfc export
+				false,         //dfc recalculation
+				false, 1000,   //intermidiate growth rate export
+				false, 1000,   //intermidiate amplitude export
+				false, 1000    //intermidiate vdf export
 			);
 		}
 
@@ -42,10 +44,12 @@ int main() {
 				params, Space<double>{vparall_axis, vperp_axis}, vparall_size, vperp_size,
 				1.0e-10, 0., //amplitude, amplitude time
 				10000, 1.f,  //iterations, dt
-				false,         //initial core dfc 
-				true, 1000,    //intermidiate growth rate
-				false, 1000,   //intermidiate amplitude
-				false, 1000    //intermidiate vdf
+				false,         //initial vdf export
+				false,         //initial core dfc export
+				false,         //dfc recalculation
+				false, 1000,   //intermidiate growth rate export
+				false, 1000,   //intermidiate amplitude export
+				false, 1000    //intermidiate vdf export
 			);
 		}
 	} 
