@@ -20,7 +20,6 @@ namespace iki { namespace whfi {
 			auto k_betta = wk_pair.second * params.betta_root_c;
 			return -T(1.25331414) * (moments.GDerive(vparall) - moments.g(vparall) / k_betta) / dDdw(wk_pair.first, wk_pair.second);
 		};
-
 		
 		T left = begin, right = end, step = (right - begin) / (vparall_size - 1);
 		grid::Axis<T> vparall_axis{ begin, step };
