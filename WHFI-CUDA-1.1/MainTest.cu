@@ -5,6 +5,7 @@
 #include "construct_vparall_axis.h"
 
 #include <iostream>
+#include <fstream>
 #include <exception>
 
 using namespace std;
@@ -19,13 +20,37 @@ int main() {
 	try {
 		if (true) {
 			auto params = init_parameters(0.95f, 1.0f / 0.95f, 1.f/6.f, -2.f);
-			unsigned vparall_size = 512; unsigned vperp_size = 2 * 2048;
-			Axis<float> vparall_axis = construct_vparall_axis<float>(params,make_ZFunc<float>(1.e-5f, 15.f), vparall_size, -9.f, -0.96f);
-			Axis<float> vperp_axis = { -1e-2f, 2e-2f }; 
+			unsigned vparall_size = 512; unsigned vperp_size = 3072;
+			Axis<float> vparall_axis = construct_vparall_axis<float>(params,make_ZFunc<float>(1.e-5f, 15.f), vparall_size, -12.f, -0.96f);
+			Axis<float> vperp_axis = { -0.75e-2f, 1.5e-2f };
+
+			//analytical growth rate
+			if (false) {
+				auto zfunc = make_ZFunc<float>(1.e-5f, 15.f);
+				auto moments = AnalyticalMoments<float>(params);
+				auto vres_solver = ResonantVelocitySolver<float>(zfunc, params);
+				auto dDdw = DispersionRelationOmegaDerivative<float>(zfunc, params);
+
+				{
+					ofstream ascii_os;
+					ascii_os.precision(7); ascii_os.setf(ios::scientific, ios::floatfield);
+					ascii_os.exceptions(ios::badbit | ios::failbit);
+					ascii_os.open("./data/growth-rate-analytical.txt");
+					for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
+						auto vparall = vparall_axis(vparall_idx);
+						auto wk_pair = vres_solver(vparall);
+						auto k_betta = wk_pair.second * params.betta_root_c;
+						auto growth_rate = -float(1.25331414) * (moments.GDerive(vparall) - moments.g(vparall) / k_betta) / dDdw(wk_pair.first, wk_pair.second);
+						ascii_os << wk_pair.second << ' ' << vparall << ' ' << growth_rate << '\n';
+					}
+				}
+				return 0;
+			}
+
 			vdf_diffusion<float>(
 				params, Space<float>{vparall_axis, vperp_axis}, vparall_size, vperp_size,
 				1.0e-5f, 0.f, //amplitude, amplitude time
-				2000, 1.f,  //iterations, dt
+				1, 1.f,  //iterations, dt
 				false,         //initial vdf export
 				false,         //initial core dfc export
 				false,         //dfc recalculation
