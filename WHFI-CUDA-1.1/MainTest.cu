@@ -50,31 +50,51 @@ int main() {
 			vdf_diffusion<float>(
 				params, Space<float>{vparall_axis, vperp_axis}, vparall_size, vperp_size,
 				1.0e-5f, 0.f, //amplitude, amplitude time
-				1, 1.f,  //iterations, dt
-				false,         //initial vdf export
+				4000, 1.f,  //iterations, dt
 				false,         //initial core dfc export
 				false,         //dfc recalculation
-				false, 1000,   //intermidiate growth rate export
-				false, 1000,   //intermidiate amplitude export
-				false, 1000    //intermidiate vdf export
+				true, 1000,   //intermidiate growth rate export
+				true, 1000    //intermidiate vdf export
 			);
 		}
 
 		if (false) {
 			auto params = init_parameters(0.95, 1.0 / 0.95, 1./6., -2.);
-			unsigned vparall_size = 512; unsigned vperp_size = 2 * 2048;
-			Axis<double> vparall_axis = construct_vparall_axis<double>(params, make_ZFunc<double>(1.e-5, 15.), vparall_size, -9., -0.96);
-			Axis<double> vperp_axis = { -1e-2, 2e-2 };
+			unsigned vparall_size = 512; unsigned vperp_size = 3072;
+			Axis<double> vparall_axis = construct_vparall_axis<double>(params,make_ZFunc<double>(1.e-5, 15.), vparall_size, -12., -0.96);
+			Axis<double> vperp_axis = { -0.75e-2, 1.5e-2 };
+
+			//analytical growth rate
+			if (false) {
+				auto zfunc = make_ZFunc<double>(1.e-5, 15.);
+				auto moments = AnalyticalMoments<double>(params);
+				auto vres_solver = ResonantVelocitySolver<double>(zfunc, params);
+				auto dDdw = DispersionRelationOmegaDerivative<double>(zfunc, params);
+
+				{
+					ofstream ascii_os;
+					ascii_os.precision(7); ascii_os.setf(ios::scientific, ios::floatfield);
+					ascii_os.exceptions(ios::badbit | ios::failbit);
+					ascii_os.open("./data/growth-rate-analytical.txt");
+					for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
+						auto vparall = vparall_axis(vparall_idx);
+						auto wk_pair = vres_solver(vparall);
+						auto k_betta = wk_pair.second * params.betta_root_c;
+						auto growth_rate = -double(1.25331414) * (moments.GDerive(vparall) - moments.g(vparall) / k_betta) / dDdw(wk_pair.first, wk_pair.second);
+						ascii_os << wk_pair.second << ' ' << vparall << ' ' << growth_rate << '\n';
+					}
+				}
+				return 0;
+			}
+
 			vdf_diffusion<double>(
 				params, Space<double>{vparall_axis, vperp_axis}, vparall_size, vperp_size,
-				1.0e-10, 0., //amplitude, amplitude time
-				10000, 1.f,  //iterations, dt
-				false,         //initial vdf export
+				1.0e-5, 0., //amplitude, amplitude time
+				4000, 1.,  //iterations, dt
 				false,         //initial core dfc export
 				false,         //dfc recalculation
-				false, 1000,   //intermidiate growth rate export
-				false, 1000,   //intermidiate amplitude export
-				false, 1000    //intermidiate vdf export
+				true, 1000,   //intermidiate growth rate export
+				true, 1000    //intermidiate vdf export
 			);
 		}
 	} 
