@@ -68,8 +68,8 @@ void initial_diffusion_coefficients_calculation(
 		}
 
 		//boundary condition: no mixed flow at the corners
-		dfc_vperp_vparall(vperp_size - 2, 0) = dfc_vperp_vparall(1, 0) = dfc_vperp_vparall(vperp_size - 2, vparall_size - 2) = dfc_vperp_vparall(1, vparall_size - 2) = T(0);
-		dfc_vparall_vperp(1, 0) = dfc_vparall_vperp(vparall_size - 2, 0) = dfc_vparall_vperp(1, vperp_size - 2) = dfc_vparall_vperp(vparall_size - 2, vperp_size - 2) = T(0);
+		/*dfc_vperp_vparall(vperp_size - 2, 0) = dfc_vperp_vparall(1, 0) = dfc_vperp_vparall(vperp_size - 2, vparall_size - 2) = dfc_vperp_vparall(1, vparall_size - 2) = T(0);
+		dfc_vparall_vperp(1, 0) = dfc_vparall_vperp(vparall_size - 2, 0) = dfc_vparall_vperp(1, vperp_size - 2) = dfc_vparall_vperp(vparall_size - 2, vperp_size - 2) = T(0);*/
 
 		//boundary condition: zero flow through vperp min
 		for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {

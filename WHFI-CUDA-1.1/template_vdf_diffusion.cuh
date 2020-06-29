@@ -42,11 +42,9 @@ namespace iki { namespace whfi {
 		grid::Space<T> vspace, unsigned vparall_size, unsigned vperp_size,
 		T noise_amplitude, T amplitude_amplification_time,
 		unsigned iterations, T dt,
-		bool log_initial_vdf,
 		bool log_initial_diffusion_coefficients,
 		bool dfc_recalculation,
 		bool log_growth_rate_intermidiate, unsigned gr_log_period,
-		bool log_amplitude_intermidiate, unsigned amp_log_period,
 		bool log_vdf_intermidiate, unsigned vdf_log_period
 		) {
 
@@ -54,14 +52,6 @@ namespace iki { namespace whfi {
 		auto h_initial_vdf_grid = calculate_muVDF(params, vspace, vparall_size, vperp_size);
 		for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx)
 			h_initial_vdf_grid.table(vparall_idx, 0) = h_initial_vdf_grid.table(vparall_idx, 1);
-
-		//log initial vdf
-		if (log_initial_vdf) {
-			std::ofstream ascii_os;
-			ascii_os << exceptional_scientific;
-			ascii_os.open("./data/vdf-initial.txt");
-			ascii_os << h_initial_vdf_grid;
-		}
 
 		grid::HostGrid<T>
 			h_result_vdf_grid(vspace, vparall_size, vperp_size),
@@ -139,30 +129,20 @@ namespace iki { namespace whfi {
 		;
 
 		growth_rate.recalculate(diffusion_solver.x_prev);
-		//log initial growth rate
+		//amplitude premultiplication
+		{
+			for (unsigned idx = 0; idx != h_amplitude.size; ++idx) {
+				h_amplitude(idx) = noise_amplitude * std::exp(2 * h_growth_rate(idx) * amplitude_amplification_time);
+			}
+		}
+		//log initial growth rate and amplitude
 		{
 			table::device_to_host_transfer(growth_rate.growth_rate, h_growth_rate);
 			std::ofstream ascii_os;
 			ascii_os << exceptional_scientific;
 			ascii_os.open("./data/growth-rate-initial.txt");
 			for (unsigned idx = 0; idx != h_growth_rate.size; ++idx) {
-				ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_growth_rate(idx) << '\n';
-			}
-		}
-
-		//amplitude premultiplication
-		{
-			for (unsigned idx = 0; idx != h_amplitude.size; ++idx) {
-				h_amplitude(idx) = noise_amplitude * std::exp(2 * h_growth_rate(idx) * amplitude_amplification_time);
-			}
-
-			{
-				std::ofstream ascii_os;
-				ascii_os << exceptional_scientific;
-				ascii_os.open("./data/amplitude-initial.txt");
-				for (unsigned idx = 0; idx != h_growth_rate.size; ++idx) {
-					ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_amplitude(idx) << '\n';
-				}
+				ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_growth_rate(idx) << ' ' << h_amplitude(idx) << '\n';
 			}
 		}
 
@@ -208,7 +188,7 @@ namespace iki { namespace whfi {
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Amplitude spectrum recalculation kernel failed: ", cudaStatus);
 
-				whfi::device::diffusion_coefficients_recalculation_kernel << <vparall_size / 512, 512 >> > (
+				whfi::device::diffusion_coefficients_recalculation_kernel<<<vparall_size / 512, 512>>>(
 					core_dfc_vperp_vperp.table(),
 					core_dfc_vparall_vparall.table(),
 					core_dfc_vparall_vperp.table(),
@@ -227,53 +207,33 @@ namespace iki { namespace whfi {
 			if (log_growth_rate_intermidiate && 0 != cnt && 0 == cnt % gr_log_period) {
 				std::ostringstream s_os; s_os << "./data/growth-rate-" << cnt << "-intermidiate.txt";
 				table::device_to_host_transfer(growth_rate.growth_rate, h_growth_rate);
-				{
-					std::ofstream ascii_os;
-					ascii_os << exceptional_scientific;
-					ascii_os.open(s_os.str());
-					for (unsigned idx = 0; idx != h_growth_rate.size; ++idx) {
-						ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_growth_rate(idx) << '\n';
-					}
-				}
-			}
-
-			if (log_amplitude_intermidiate && 0 != cnt && 0 == cnt % amp_log_period) {
-				std::ostringstream s_os; s_os << "./data/growth-rate-" << cnt << "-intermidiate.txt";
 				table::device_to_host_transfer(amplitude, h_amplitude);
 				{
 					std::ofstream ascii_os;
 					ascii_os << exceptional_scientific;
 					ascii_os.open(s_os.str());
 					for (unsigned idx = 0; idx != h_growth_rate.size; ++idx) {
-						ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_amplitude(idx) << '\n';
+						ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_growth_rate(idx) << ' ' << h_amplitude(idx) << '\n';
 					}
 				}
 			}
 			
 			if (log_vdf_intermidiate && 0 != cnt && 0 == cnt % vdf_log_period) {
 				std::ostringstream vdf_sos; vdf_sos << "./data/vdf-" << cnt << "-intermidiate.txt";
-				std::ostringstream vdf_diff_sos; vdf_diff_sos << "./data/vdf-diff-" << cnt << "-intermidiate.txt";
-
 				table::device_to_host_transfer(diffusion_solver.x_prev, h_result_vdf_grid.table);
 				for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
 					for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx)
 						h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) = h_result_vdf_grid.table(vparall_idx, vperp_idx) - h_initial_vdf_grid.table(vparall_idx, vperp_idx);
 				}
 
-				//vdf
 				{
 					std::ofstream ascii_os;
 					ascii_os << exceptional_scientific;
 					ascii_os.open(vdf_sos.str());
-					ascii_os << h_result_vdf_grid;
-				}
-				
-				//vdf diff
-				{
-					std::ofstream ascii_os;
-					ascii_os << exceptional_scientific;
-					ascii_os.open(vdf_diff_sos.str());
-					ascii_os << h_result_vdf_diff_grid;
+					for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
+						for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx)
+							ascii_os << vspace.perp(vparall_idx) << ' ' << vspace.along(vperp_idx) << ' ' << std::sqrt(std::fabs(vspace.along(vperp_idx))) << ' ' << h_result_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_initial_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) / h_initial_vdf_grid.table(vparall_idx, vperp_idx) << '\n';
+					}
 				}
 			}
 		}
@@ -288,50 +248,31 @@ namespace iki { namespace whfi {
 						h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) = h_result_vdf_grid.table(vparall_idx, vperp_idx) - h_initial_vdf_grid.table(vparall_idx, vperp_idx);
 				}
 			}
-			//vdf 
+
 			{
 				std::ofstream ascii_os;
 				ascii_os << exceptional_scientific;
 				ascii_os.open("./data/vdf-result.txt");
-				ascii_os << h_result_vdf_grid;
-			}
-
-			//vdf diff
-			{
-				std::ofstream ascii_os;
-				ascii_os << exceptional_scientific;
-				ascii_os.open("./data/vdf-diff-result.txt");
-				ascii_os << h_result_vdf_diff_grid;
+				for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
+					for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx)
+						ascii_os << vspace.perp(vparall_idx) << ' ' << vspace.along(vperp_idx) << ' ' << std::sqrt(std::fabs(vspace.along(vperp_idx))) << ' ' << h_result_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_initial_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) / h_initial_vdf_grid.table(vparall_idx, vperp_idx) << '\n';
+				}
 			}
 		}
 
-		//log result growth rate
+		//log result growth rate and amplitude
 		{
 			table::device_to_host_transfer(growth_rate.growth_rate, h_growth_rate);
+			table::device_to_host_transfer(amplitude, h_amplitude);
 			{
 				std::ofstream ascii_os;
 				ascii_os << exceptional_scientific;
 				ascii_os.open("./data/growth-rate-result.txt");
 				for (unsigned idx = 0; idx != h_growth_rate.size; ++idx) {
-					ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_growth_rate(idx) << '\n';
+					ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_growth_rate(idx) << ' ' << h_amplitude(idx) << '\n';
 				}
 			}
 		}
-
-		//log result amplitude
-		{
-			table::device_to_host_transfer(amplitude, h_amplitude);
-			{
-				std::ofstream ascii_os;
-				ascii_os << exceptional_scientific;
-				ascii_os.open("./data/amplitude-spectrum-result.txt");
-				for (unsigned idx = 0; idx != h_growth_rate.size; ++idx) {
-					ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_amplitude(idx) << '\n';
-				}
-			}
-		}
-
-		//log result diffusion coefficients
 	}
 
 }/*whfi*/ }/*iki*/
