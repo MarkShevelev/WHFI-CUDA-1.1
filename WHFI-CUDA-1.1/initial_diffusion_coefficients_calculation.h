@@ -63,7 +63,7 @@ void initial_diffusion_coefficients_calculation(
 		for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx) {
 			for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
 				dfc_vparall_vparall(vperp_idx, vparall_idx) = vperp_axis(vperp_idx) * R(2 * vparall_idx + 1);
-				dfc_vperp_vparall(vperp_idx, vparall_idx) = vperp_axis(vperp_idx) / double_k_betta(2 * vparall_idx + 1) * R(2 * vparall_idx + 1);
+				dfc_vperp_vparall(vperp_idx, vparall_idx) = vperp_axis(vperp_idx) / double_k_betta(2 * vparall_idx) * R(2 * vparall_idx);
 			}
 		}
 
