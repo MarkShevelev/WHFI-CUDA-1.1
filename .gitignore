@@ -341,3 +341,4 @@ healthchecksdb
 *.grd
 *.tbl
 *.txt
+*.plt
