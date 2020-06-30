@@ -129,26 +129,26 @@ namespace iki { namespace whfi {
 		;
 
 		growth_rate.recalculate(diffusion_solver.x_prev);
-
-		//amplitude premultiplication
-		{
-			for (unsigned idx = 0; idx != h_amplitude.size; ++idx) {
-				h_amplitude(idx) = noise_amplitude * std::exp(2 * h_growth_rate(idx) * amplitude_amplification_time);
-			}
-		}
-
 		//log initial growth rate and amplitude
 		{
 			table::device_to_host_transfer(growth_rate.growth_rate, h_growth_rate);
-			std::ofstream ascii_os;
-			ascii_os << exceptional_scientific;
-			ascii_os.open("./data/growth-rate-initial.txt");
-			for (unsigned idx = 0; idx != h_growth_rate.size; ++idx) {
-				ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_growth_rate(idx) << ' ' << h_amplitude(idx) <<  '\n';
+
+			//amplitude premultiplication
+			{
+				for (unsigned idx = 0; idx != h_amplitude.size; ++idx) {
+					h_amplitude(idx) = noise_amplitude * std::exp(2 * h_growth_rate(idx) * amplitude_amplification_time);
+				}
+			}
+
+			{
+				std::ofstream ascii_os;
+				ascii_os << exceptional_scientific;
+				ascii_os.open("./data/growth-rate-initial.txt");
+				for (unsigned idx = 0; idx != h_growth_rate.size; ++idx) {
+					ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_growth_rate(idx) << ' ' << h_amplitude(idx) << '\n';
+				}
 			}
 		}
-
-		
 
 		table::HostManagedDeviceDataLine<T> amplitude(table::construct_from(h_amplitude));
 		//diffusion coefficients multiplication
