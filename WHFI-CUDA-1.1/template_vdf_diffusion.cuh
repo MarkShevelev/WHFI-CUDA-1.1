@@ -129,15 +129,14 @@ namespace iki { namespace whfi {
 		;
 
 		growth_rate.recalculate(diffusion_solver.x_prev);
-		//amplitude premultiplication
-		{
-			for (unsigned idx = 0; idx != h_amplitude.size; ++idx) {
-				h_amplitude(idx) = noise_amplitude * std::exp(2 * h_growth_rate(idx) * amplitude_amplification_time);
-			}
-		}
 		//log initial growth rate and amplitude
 		{
 			table::device_to_host_transfer(growth_rate.growth_rate, h_growth_rate);
+			//amplitude premultiplication
+			for (unsigned idx = 0; idx != h_amplitude.size; ++idx) {
+				h_amplitude(idx) = noise_amplitude * std::exp(2 * h_growth_rate(idx) * amplitude_amplification_time);
+			}
+
 			std::ofstream ascii_os;
 			ascii_os << exceptional_scientific;
 			ascii_os.open("./data/growth-rate-initial.txt");
@@ -173,7 +172,7 @@ namespace iki { namespace whfi {
 			//boundary conditions
 			{
 				cudaError_t cudaStatus;
-				diffusion::device::perp_axis_max_boundary_kernel<<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
+				//diffusion::device::perp_axis_max_boundary_kernel<<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
 				diffusion::device::along_axis_min_boundary_kernel<<<vparall_size / 512, 512>>> (diffusion_solver.x_prev.table());
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Boundary condition kernel failed: ", cudaStatus);
