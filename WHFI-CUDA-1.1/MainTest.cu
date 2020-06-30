@@ -19,8 +19,8 @@ int main() {
 		if (true) {
 			auto params = init_parameters(0.95f, 1.0f / 0.95f, 1.f/6.f, -2.f);
 			unsigned vparall_size = 512; unsigned vperp_size = 3072;
-			//Axis<float> vparall_axis = construct_vparall_axis<float>(params,make_ZFunc<float>(1.e-5f, 15.f), vparall_size, -12.f, -0.96f);
-			Axis<float> vparall_axis = { -12.f, 2.e-2f };
+			Axis<float> vparall_axis = construct_vparall_axis<float>(params,make_ZFunc<float>(1.e-5f, 15.f), vparall_size, -12.f, -0.96f);
+			//Axis<float> vparall_axis = { -12.f, 2.e-2f };
 			Axis<float> vperp_axis = { -0.75e-2f, 1.5e-2f };
 
 			//analytical growth rate
@@ -48,12 +48,12 @@ int main() {
 
 			vdf_diffusion<float>(
 				params, Space<float>{vparall_axis, vperp_axis}, vparall_size, vperp_size,
-				1.0e-5f, 0.f, //amplitude, amplitude time
-				4000, 1.0f,  //iterations, dt
+				1.0e-6f, 0.f, //amplitude, amplitude time
+				4000, 1.f,  //iterations, dt
 				false,         //initial core dfc export
-				true,         //dfc recalculation
+				false,         //dfc recalculation
 				true, 1000,   //intermidiate growth rate export
-				false, 1000    //intermidiate vdf export
+				false, 2000    //intermidiate vdf export
 			);
 		}
 
