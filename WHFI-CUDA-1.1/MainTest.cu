@@ -49,12 +49,12 @@ int main() {
 
 			vdf_diffusion<float>(
 				params, Space<float>{vparall_axis, vperp_axis}, vparall_size, vperp_size,
-				1.0e-10f, 0.f, //amplitude, amplitude time
-				10000, 1.f,  //iterations, dt
+				1.0e-6f, 2000.f, //amplitude, amplitude time
+				4000, 1.f,  //iterations, dt
 				false,         //initial core dfc export
-				true,         //dfc recalculation
+				false,         //dfc recalculation
 				true, 1000,   //intermidiate growth rate export
-				true, 1000    //intermidiate vdf export
+				false, 1000    //intermidiate vdf export
 			);
 		}
 
