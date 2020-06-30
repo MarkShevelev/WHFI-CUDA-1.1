@@ -17,10 +17,10 @@ namespace iki { namespace diffusion { namespace device {
 
 		if (0 == row_idx || x_prev.row_count - 1 == row_idx || 0 == elm_idx || x_prev.row_size - 1 == elm_idx) return;
 
-		a(row_idx,elm_idx) = -0.5 * along_r * along_dfc(row_idx, elm_idx - 1);
-		b(row_idx, elm_idx) = T(1) + 0.5 * along_r * (along_dfc(row_idx, elm_idx-1) + along_dfc(row_idx, elm_idx));
-		c(row_idx, elm_idx) = -0.5 * along_r * along_dfc(row_idx, elm_idx);
+		a(row_idx, elm_idx) = -T(0.5) * along_r * along_dfc(row_idx, elm_idx - 1);
+		b(row_idx, elm_idx) = T(1) + T(0.5) * along_r * (along_dfc(row_idx, elm_idx - 1) + along_dfc(row_idx, elm_idx));
+		c(row_idx, elm_idx) = -T(0.5) * along_r * along_dfc(row_idx, elm_idx);
 		d(row_idx, elm_idx) = x_next(row_idx, elm_idx)
-			- 0.5 * along_r * along_diagonal_discretization(x_prev,along_dfc,row_idx,elm_idx);
+			- T(0.5) * along_r * along_diagonal_discretization(x_prev, along_dfc, row_idx, elm_idx);
 	}
 }/*device*/ }/*diffusion*/ }/*iki*/
