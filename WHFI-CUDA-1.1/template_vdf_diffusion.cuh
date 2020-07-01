@@ -231,7 +231,7 @@ namespace iki { namespace whfi {
 					ascii_os.open(vdf_sos.str());
 					for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
 						for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx)
-							ascii_os << vspace.perp(vparall_idx) << ' ' << vspace.along(vperp_idx) << ' ' << std::sqrt(std::fabs(vspace.along(vperp_idx))) << ' ' << h_result_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_initial_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) / h_initial_vdf_grid.table(vparall_idx, vperp_idx) << '\n';
+							ascii_os << vspace.perp(vparall_idx) << ' ' << vspace.along(vperp_idx) << ' ' << std::sqrt(2 * std::fabs(vspace.along(vperp_idx))) << ' ' << h_result_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_initial_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) / h_initial_vdf_grid.table(vparall_idx, vperp_idx) << '\n';
 					}
 				}
 			}
@@ -254,7 +254,7 @@ namespace iki { namespace whfi {
 				ascii_os.open("./data/vdf-result.txt");
 				for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
 					for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx)
-						ascii_os << vspace.perp(vparall_idx) << ' ' << vspace.along(vperp_idx) << ' ' << std::sqrt(std::fabs(vspace.along(vperp_idx))) << ' ' << h_result_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_initial_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) / h_initial_vdf_grid.table(vparall_idx, vperp_idx) << '\n';
+						ascii_os << vspace.perp(vparall_idx) << ' ' << vspace.along(vperp_idx) << ' ' << std::sqrt(2 * std::fabs(vspace.along(vperp_idx))) << ' ' << h_result_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_initial_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) / h_initial_vdf_grid.table(vparall_idx, vperp_idx) << '\n';
 				}
 			}
 		}
