@@ -11,10 +11,10 @@ namespace iki { namespace diffusion { namespace device {
 		T central_grad = (x_curr(row_idx + 1, elm_idx) - x_curr(row_idx - 1, elm_idx));
 		T left_grad = (x_curr(row_idx + 1, elm_idx - 1) - x_curr(row_idx - 1, elm_idx - 1));
 
-		T right_q = along_mixed_dfc(row_idx, elm_idx) * (right_grad + central_grad);
-		T left_q = along_mixed_dfc(row_idx, elm_idx-1) * (left_grad + central_grad);
+		T right_q = along_mixed_dfc(row_idx, elm_idx) * (3 * right_grad + 6 * central_grad - left_grad);
+		T left_q = along_mixed_dfc(row_idx, elm_idx-1) * (3 * left_grad + 6 * central_grad - right_grad);
 
-		return T(0.25) * (right_q - left_q);
+		return (right_q - left_q) / 16;
 	}
 
 	template <typename T>
@@ -23,9 +23,9 @@ namespace iki { namespace diffusion { namespace device {
 		T central_grad = (x_curr(row_idx, elm_idx + 1) - x_curr(row_idx, elm_idx - 1));
 		T left_grad = (x_curr(row_idx - 1, elm_idx + 1) - x_curr(row_idx - 1, elm_idx - 1));
 
-		T right_q = perp_mixed_dfc(elm_idx, row_idx) * (right_grad + central_grad);
-		T left_q = perp_mixed_dfc(elm_idx, row_idx - 1) * (left_grad + central_grad);
+		T right_q = perp_mixed_dfc(elm_idx, row_idx) * (3 * right_grad + 6 * central_grad - left_grad);
+		T left_q = perp_mixed_dfc(elm_idx, row_idx - 1) * (3 * left_grad + 6 * central_grad - right_grad);
 
-		return T(0.25) * (right_q - left_q);
+		return (right_q - left_q) / 16;
 	}
 }/*device*/ }/*diffusion*/ }/*iki*/
