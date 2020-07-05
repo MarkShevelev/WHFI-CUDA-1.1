@@ -172,7 +172,7 @@ namespace iki { namespace whfi {
 			//boundary conditions
 			{
 				cudaError_t cudaStatus;
-				//diffusion::device::perp_axis_max_boundary_kernel<<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
+				diffusion::device::perp_axis_max_boundary_kernel<<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
 				diffusion::device::along_axis_min_boundary_kernel<<<vparall_size / 512, 512>>> (diffusion_solver.x_prev.table());
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Boundary condition kernel failed: ", cudaStatus);
