@@ -45,7 +45,8 @@ namespace iki { namespace whfi {
 		bool log_initial_diffusion_coefficients,
 		bool dfc_recalculation,
 		bool log_growth_rate_intermidiate, unsigned gr_log_period,
-		bool log_vdf_intermidiate, unsigned vdf_log_period
+		bool log_vdf_intermidiate, unsigned vdf_log_period,
+		unsigned vparall_rate, unsigned vperp_rate
 		) {
 
 		grid::Space<T> vspace_transposed = vspace; vspace_transposed.swap_axes();
@@ -172,7 +173,7 @@ namespace iki { namespace whfi {
 			//boundary conditions
 			{
 				cudaError_t cudaStatus;
-				//diffusion::device::perp_axis_max_boundary_kernel<<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
+				diffusion::device::perp_axis_max_boundary_kernel<<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
 				diffusion::device::along_axis_min_boundary_kernel<<<vparall_size / 512, 512>>> (diffusion_solver.x_prev.table());
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Boundary condition kernel failed: ", cudaStatus);
@@ -229,8 +230,8 @@ namespace iki { namespace whfi {
 					std::ofstream ascii_os;
 					ascii_os << exceptional_scientific;
 					ascii_os.open(vdf_sos.str());
-					for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
-						for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx)
+					for (unsigned vparall_idx = 0; vparall_idx < vparall_size; vparall_idx += vparall_rate) {
+						for (unsigned vperp_idx = 0; vperp_idx < vperp_size; vperp_idx += vperp_rate)
 							ascii_os << vspace.perp(vparall_idx) << ' ' << vspace.along(vperp_idx) << ' ' << std::sqrt(2 * std::fabs(vspace.along(vperp_idx))) << ' ' << h_result_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_initial_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) / h_initial_vdf_grid.table(vparall_idx, vperp_idx) << '\n';
 					}
 				}
@@ -252,8 +253,8 @@ namespace iki { namespace whfi {
 				std::ofstream ascii_os;
 				ascii_os << exceptional_scientific;
 				ascii_os.open("./data/vdf-result.txt");
-				for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
-					for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx)
+				for (unsigned vparall_idx = 0; vparall_idx < vparall_size; vparall_idx += vparall_rate) {
+					for (unsigned vperp_idx = 0; vperp_idx < vperp_size; vperp_idx += vperp_rate)
 						ascii_os << vspace.perp(vparall_idx) << ' ' << vspace.along(vperp_idx) << ' ' << std::sqrt(2 * std::fabs(vspace.along(vperp_idx))) << ' ' << h_result_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_initial_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) / h_initial_vdf_grid.table(vparall_idx, vperp_idx) << '\n';
 				}
 			}
