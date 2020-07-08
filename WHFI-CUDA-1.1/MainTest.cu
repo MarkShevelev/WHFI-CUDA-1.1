@@ -20,10 +20,13 @@ int main() {
 	try {
 		if (true) {
 			auto params = init_parameters(0.95f, 1.0f / 0.95f, 1.f/6.f, -2.f);
-			unsigned vparall_size = 1024; unsigned vperp_size = 3072;
-			//Axis<float> vparall_axis = construct_vparall_axis<float>(params,make_ZFunc<float>(1.e-5f, 15.f), vparall_size, -12.f, -0.96f);
-			Axis<float> vparall_axis = { -12.f, 1.e-2f };
-			Axis<float> vperp_axis = { -0.75e-2f, 1.5e-2f };
+			unsigned vparall_size = 512; unsigned vperp_size = 2048;
+			Axis<float> vparall_axis = construct_vparall_axis<float>(params,make_ZFunc<float>(1.e-5f, 15.f), vparall_size, -9.f, -1.0f);
+			//Axis<float> vparall_axis = { -9.f, 1.e-2f };
+			Axis<float> vperp_axis = { -1.0e-2f, 2.e-2f };
+
+			cout.precision(7); cout.setf(ios::scientific, ios::floatfield);
+			cout << vparall_axis.begin << ' ' << vparall_axis.step << endl;
 
 			//analytical growth rate
 			if (false) {
@@ -50,12 +53,13 @@ int main() {
 
 			vdf_diffusion<float>(
 				params, Space<float>{vparall_axis, vperp_axis}, vparall_size, vperp_size,
-				1.0e-9f, 4000.f, //amplitude, amplitude time
+				1.0e-6f, 0.f, //amplitude, amplitude time
 				2000, 1.f,  //iterations, dt
 				false,         //initial core dfc export
-				false,         //dfc recalculation
-				true, 1000,   //intermidiate growth rate export
-				false, 1000    //intermidiate vdf export
+				true,         //dfc recalculation
+				false, 1000,   //intermidiate growth rate export
+				false, 1000,   //intermidiate vdf export
+				1,4            //vdf explort sampling rate 
 			);
 		}
 
@@ -94,8 +98,9 @@ int main() {
 				4000, 1.,  //iterations, dt
 				false,         //initial core dfc export
 				false,         //dfc recalculation
-				true, 1000,   //intermidiate growth rate export
-				true, 1000    //intermidiate vdf export
+				false, 1000,   //intermidiate growth rate export
+				false, 1000,   //intermidiate vdf export
+				1, 4           //vdf export sampling rate
 			);
 		}
 	} 
