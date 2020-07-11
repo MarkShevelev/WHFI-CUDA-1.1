@@ -14,14 +14,12 @@ using namespace iki::whfi;
 using namespace iki::table;
 using namespace iki::grid;
 
-void float_automated_vparall_axis_test(PhysicalParameters<float> params, unsigned vparall_size, float begin, float end);
-
 int main() {
 	try {
 		if (true) {
 			auto params = init_parameters(0.95f, 1.0f / 0.95f, 1.f/6.f, -2.f);
 			unsigned vparall_size = 512; unsigned vperp_size = 2048;
-			Axis<float> vparall_axis = construct_vparall_axis<float>(params,make_ZFunc<float>(1.e-5f, 15.f), vparall_size, -9.f, -1.0f);
+			Axis<float> vparall_axis = construct_vparall_axis<float>(params,make_ZFunc<float>(1.e-5f, 15.f), vparall_size, -9.5f, -1.0f);
 			//Axis<float> vparall_axis = { -9.f, 1.e-2f };
 			Axis<float> vperp_axis = { -1.0e-2f, 2.e-2f };
 
@@ -53,13 +51,13 @@ int main() {
 
 			vdf_diffusion<float>(
 				params, Space<float>{vparall_axis, vperp_axis}, vparall_size, vperp_size,
-				1.0e-6f, 0.f, //amplitude, amplitude time
+				1.0e-4f, 0.f, //amplitude, amplitude time
 				2000, 1.f,  //iterations, dt
 				false,         //initial core dfc export
-				true,         //dfc recalculation
+				false,         //dfc recalculation
 				false, 1000,   //intermidiate growth rate export
 				false, 1000,   //intermidiate vdf export
-				1,4            //vdf explort sampling rate 
+				1, 4           //vdf explort sampling rate 
 			);
 		}
 
