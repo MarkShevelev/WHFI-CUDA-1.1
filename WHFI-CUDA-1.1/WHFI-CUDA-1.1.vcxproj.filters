@@ -58,6 +58,9 @@
     <Filter Include="Test">
       <UniqueIdentifier>{776ebc7f-2c51-4833-9b38-e91acb5aae95}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WHFI\ConservationLaws">
+      <UniqueIdentifier>{68d6ba0f-2915-478b-a61c-43acbbabe522}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep_kernel.cuh">
@@ -182,6 +185,9 @@
     </ClInclude>
     <ClInclude Include="neuman_boundary_condition.cuh">
       <Filter>Diffusion\Device\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="data_line_folding.h">
+      <Filter>WHFI\ConservationLaws</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

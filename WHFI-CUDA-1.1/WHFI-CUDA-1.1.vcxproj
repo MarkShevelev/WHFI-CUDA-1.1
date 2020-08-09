@@ -15,6 +15,7 @@
     <ClInclude Include="AnalyticalMoments.h" />
     <ClInclude Include="compensation_matrix_calculation_kernel.cuh" />
     <ClInclude Include="construct_vparall_axis.h" />
+    <ClInclude Include="data_line_folding.h" />
     <ClInclude Include="DeviceDataLine.cuh" />
     <ClInclude Include="diffusion_coefficients_recalculation_kernel.cuh" />
     <ClInclude Include="initial_diffusion_coefficients_calculation.h" />
