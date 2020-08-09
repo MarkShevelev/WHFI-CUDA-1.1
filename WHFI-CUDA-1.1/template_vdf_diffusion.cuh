@@ -22,6 +22,9 @@
 
 #include "host_math_helper.h"
 
+#include "data_line_folding.h"
+
+#include <vector>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -135,7 +138,7 @@ namespace iki { namespace whfi {
 			table::device_to_host_transfer(growth_rate.growth_rate, h_growth_rate);
 			//amplitude premultiplication
 			for (unsigned idx = 0; idx != h_amplitude.size; ++idx) {
-				h_amplitude(idx) = noise_amplitude * std::exp(2 * h_growth_rate(idx) * amplitude_amplification_time);
+				h_amplitude(idx) = h_growth_rate(idx) > 0 ? noise_amplitude * std::exp(2 * h_growth_rate(idx) * amplitude_amplification_time) : T(0);
 			}
 
 			std::ofstream ascii_os;
@@ -166,6 +169,8 @@ namespace iki { namespace whfi {
 				throw DeviceError("Diffusion coefficients recalculation kernel failed: ", cudaStatus);
 		}
 	
+		table::HostDataLine<T> h_zero_moment(vparall_size);
+		std::vector<T> vdf_folded_history(iterations);
 		for (unsigned cnt = 0; cnt != iterations; ++cnt) {
 			diffusion_solver.step();
 			std::cout << '\r' << cnt;
@@ -204,6 +209,9 @@ namespace iki { namespace whfi {
 					throw DeviceError("Diffusion coefficients recalculation kernel failed: ", cudaStatus);
 			}
 
+			device_to_host_transfer(growth_rate.zero_moment, h_zero_moment);
+			vdf_folded_history[cnt] = data_line_folding(h_zero_moment, vspace.perp.step);
+
 			if (log_growth_rate_intermidiate && 0 != cnt && 0 == cnt % gr_log_period) {
 				std::ostringstream s_os; s_os << "./data/growth-rate-" << cnt << "-intermidiate.txt";
 				table::device_to_host_transfer(growth_rate.growth_rate, h_growth_rate);
@@ -238,6 +246,29 @@ namespace iki { namespace whfi {
 			}
 		}
 
+		//log density history
+		{
+			std::ofstream ascii_os;
+			ascii_os << exceptional_scientific;
+			ascii_os.open("./data/density-history.txt");
+			for (unsigned idx = 0; idx != vdf_folded_history.size(); ++idx)
+				ascii_os << idx * dt << ' ' << vdf_folded_history[idx] << '\n';
+		}
+
+		//log result growth rate and amplitude
+		{
+			table::device_to_host_transfer(growth_rate.growth_rate, h_growth_rate);
+			table::device_to_host_transfer(amplitude, h_amplitude);
+			{
+				std::ofstream ascii_os;
+				ascii_os << exceptional_scientific;
+				ascii_os.open("./data/growth-rate-result.txt");
+				for (unsigned idx = 0; idx != h_growth_rate.size; ++idx) {
+					ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_growth_rate(idx) << ' ' << h_amplitude(idx) << '\n';
+				}
+			}
+		}
+
 		//log result velocity distribution function
 		{
 			table::device_to_host_transfer(diffusion_solver.x_prev, h_result_vdf_grid.table);
@@ -256,20 +287,6 @@ namespace iki { namespace whfi {
 				for (unsigned vparall_idx = 0; vparall_idx < vparall_size; vparall_idx += vparall_rate) {
 					for (unsigned vperp_idx = 0; vperp_idx < vperp_size; vperp_idx += vperp_rate)
 						ascii_os << vspace.perp(vparall_idx) << ' ' << vspace.along(vperp_idx) << ' ' << std::sqrt(2 * std::fabs(vspace.along(vperp_idx))) << ' ' << h_result_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_initial_vdf_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) << ' ' << h_result_vdf_diff_grid.table(vparall_idx, vperp_idx) / h_initial_vdf_grid.table(vparall_idx, vperp_idx) << '\n';
-				}
-			}
-		}
-
-		//log result growth rate and amplitude
-		{
-			table::device_to_host_transfer(growth_rate.growth_rate, h_growth_rate);
-			table::device_to_host_transfer(amplitude, h_amplitude);
-			{
-				std::ofstream ascii_os;
-				ascii_os << exceptional_scientific;
-				ascii_os.open("./data/growth-rate-result.txt");
-				for (unsigned idx = 0; idx != h_growth_rate.size; ++idx) {
-					ascii_os << h_k_betta(idx) / params.betta_root_c << ' ' << vspace.perp(idx) << ' ' << h_growth_rate(idx) << ' ' << h_amplitude(idx) << '\n';
 				}
 			}
 		}
