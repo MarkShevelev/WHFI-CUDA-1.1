@@ -61,6 +61,9 @@
     <Filter Include="WHFI\ConservationLaws">
       <UniqueIdentifier>{68d6ba0f-2915-478b-a61c-43acbbabe522}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WHFI\ConservationLaws\Kernel">
+      <UniqueIdentifier>{b9f7f4ca-b091-4f86-860e-354d3a41a9ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thomson_sweep_kernel.cuh">
@@ -188,6 +191,9 @@
     </ClInclude>
     <ClInclude Include="data_line_folding.h">
       <Filter>WHFI\ConservationLaws</Filter>
+    </ClInclude>
+    <ClInclude Include="perp_mean_energy.cuh">
+      <Filter>WHFI\ConservationLaws\Kernel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

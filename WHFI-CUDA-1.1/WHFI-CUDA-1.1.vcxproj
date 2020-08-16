@@ -43,6 +43,7 @@
     <ClInclude Include="HostTableTranspose.h" />
     <ClInclude Include="HostManagedDeviceTableTranspose.cuh" />
     <ClInclude Include="neuman_boundary_condition.cuh" />
+    <ClInclude Include="perp_mean_energy.cuh" />
     <ClInclude Include="PhysicalParameters.h" />
     <ClInclude Include="ResonantVelocitySolver.h" />
     <ClInclude Include="step_solve.h" />
