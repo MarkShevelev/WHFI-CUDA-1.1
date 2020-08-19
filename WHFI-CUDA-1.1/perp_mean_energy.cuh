@@ -8,7 +8,7 @@
 
 namespace iki { namespace whfi { namespace device { 
 	template <typename T>
-	__global__ void perp_mean_energy(table::device::DeviceTable<T> vdf_table, T begin, T step, table::device::DeviceDataLine<T> mean_energy) {
+	__global__ void perp_mean_energy_kernel(table::device::DeviceTable<T> vdf_table, T begin, T step, table::device::DeviceDataLine<T> mean_energy) {
 		unsigned row_idx = threadIdx.x + blockDim.x * blockIdx.x;
 
 		T sum = T(0.); //3/8 formula

@@ -23,6 +23,7 @@
 #include "host_math_helper.h"
 
 #include "data_line_folding.h"
+#include "perp_mean_energy.cuh"
 
 #include <vector>
 #include <iostream>
@@ -168,9 +169,16 @@ namespace iki { namespace whfi {
 			if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 				throw DeviceError("Diffusion coefficients recalculation kernel failed: ", cudaStatus);
 		}
-	
+		//vdf foled history
 		table::HostDataLine<T> h_zero_moment(vparall_size);
 		std::vector<T> vdf_folded_history(iterations);
+
+		//vdf mean perpendicular energy
+		table::HostManagedDeviceDataLine<T> d_mean_perp_energy_vparall(vparall_size);
+		table::HostDataLine<T> h_mean_perp_energy_vparall(vparall_size);
+		std::vector<T> vdf_mean_perp_energy_history(iterations);
+
+
 		for (unsigned cnt = 0; cnt != iterations; ++cnt) {
 			diffusion_solver.step();
 			std::cout << '\r' << cnt;
@@ -209,8 +217,17 @@ namespace iki { namespace whfi {
 					throw DeviceError("Diffusion coefficients recalculation kernel failed: ", cudaStatus);
 			}
 
+			//vdf folded history
 			device_to_host_transfer(growth_rate.zero_moment, h_zero_moment);
 			vdf_folded_history[cnt] = data_line_folding(h_zero_moment, vspace.perp.step);
+
+			//vdf mean perp energy history
+			{
+
+				device::perp_mean_energy_kernel<<<(vparall_size - 1) / 512 + 1, 512>>> (diffusion_solver.x_prev.table(), vspace.along.begin, vspace.along.step, d_mean_perp_energy_vparall.line());
+				device_to_host_transfer(d_mean_perp_energy_vparall, h_mean_perp_energy_vparall);
+				vdf_mean_perp_energy_history[cnt] = data_line_folding(h_mean_perp_energy_vparall, vspace.perp.step);
+			}
 
 			if (log_growth_rate_intermidiate && 0 != cnt && 0 == cnt % gr_log_period) {
 				std::ostringstream s_os; s_os << "./data/growth-rate-" << cnt << "-intermidiate.txt";
@@ -253,6 +270,15 @@ namespace iki { namespace whfi {
 			ascii_os.open("./data/density-history.txt");
 			for (unsigned idx = 0; idx != vdf_folded_history.size(); ++idx)
 				ascii_os << idx * dt << ' ' << vdf_folded_history[idx] << '\n';
+		}
+
+		//log mean perp energy
+		{
+			std::ofstream ascii_os;
+			ascii_os << exceptional_scientific;
+			ascii_os.open("./data/mean-perp-energy-history.txt");
+			for (unsigned idx = 0; idx != vdf_mean_perp_energy_history.size(); ++idx)
+				ascii_os << idx * dt << ' ' << vdf_mean_perp_energy_history[idx] << '\n';
 		}
 
 		//log result growth rate and amplitude
