@@ -78,6 +78,16 @@ namespace iki { namespace whfi {
 			h_k_betta, h_dispersion_derive
 		);
 
+		table::HostDataLine<T> h_k(vparall_size);
+		table::HostManagedDeviceDataLine<T> d_k(vparall_size);
+		//construct k-space
+		{
+			for (unsigned idx = 0; idx != h_k.size; ++idx)
+				h_k(idx) = h_k_betta(idx) / params.betta_root_c;
+			table::host_to_device_transfer(h_k, d_k);
+		}
+
+
 		//log initial diffusion coefficients
 		if (log_initial_diffusion_coefficients) {
 			//vperp_vperp
@@ -178,6 +188,9 @@ namespace iki { namespace whfi {
 		table::HostDataLine<T> h_mean_perp_energy_vparall(vparall_size);
 		std::vector<T> vdf_mean_perp_energy_history(iterations);
 
+		//vdf wave energy history
+		std::vector<T> vdf_wave_energy_history(iterations);
+
 
 		for (unsigned cnt = 0; cnt != iterations; ++cnt) {
 			diffusion_solver.step();
@@ -219,15 +232,19 @@ namespace iki { namespace whfi {
 
 			//vdf folded history
 			device_to_host_transfer(growth_rate.zero_moment, h_zero_moment);
-			vdf_folded_history[cnt] = data_line_folding(h_zero_moment, vspace.perp.step);
+			vdf_folded_history[cnt] = four_points_on_uniform_grid(h_zero_moment, vspace.perp.step);
 
 			//vdf mean perp energy history
 			{
 
 				device::perp_mean_energy_kernel<<<(vparall_size - 1) / 512 + 1, 512>>> (diffusion_solver.x_prev.table(), vspace.along.begin, vspace.along.step, d_mean_perp_energy_vparall.line());
 				device_to_host_transfer(d_mean_perp_energy_vparall, h_mean_perp_energy_vparall);
-				vdf_mean_perp_energy_history[cnt] = data_line_folding(h_mean_perp_energy_vparall, vspace.perp.step);
+				vdf_mean_perp_energy_history[cnt] = four_points_on_uniform_grid(h_mean_perp_energy_vparall, vspace.perp.step);
 			}
+
+			//vdf wave energy history
+			device_to_host_transfer(amplitude, h_amplitude);
+			vdf_wave_energy_history[cnt] = two_points_on_nonuniform_grid(h_amplitude, h_k);
 
 			if (log_growth_rate_intermidiate && 0 != cnt && 0 == cnt % gr_log_period) {
 				std::ostringstream s_os; s_os << "./data/growth-rate-" << cnt << "-intermidiate.txt";
@@ -279,6 +296,16 @@ namespace iki { namespace whfi {
 			ascii_os.open("./data/mean-perp-energy-history.txt");
 			for (unsigned idx = 0; idx != vdf_mean_perp_energy_history.size(); ++idx)
 				ascii_os << idx * dt << ' ' << vdf_mean_perp_energy_history[idx] << '\n';
+		}
+
+		//log wave energy
+		{
+
+			std::ofstream ascii_os;
+			ascii_os << exceptional_scientific;
+			ascii_os.open("./data/wave-energy-history.txt");
+			for (unsigned idx = 0; idx != vdf_mean_perp_energy_history.size(); ++idx)
+				ascii_os << idx * dt << ' ' << vdf_wave_energy_history[idx] << '\n';
 		}
 
 		//log result growth rate and amplitude
