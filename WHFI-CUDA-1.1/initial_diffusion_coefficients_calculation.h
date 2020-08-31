@@ -82,5 +82,17 @@ void initial_diffusion_coefficients_calculation(
 			dfc_vparall_vparall(vperp_idx, vparall_size - 2) = T(0); dfc_vperp_vparall(vperp_idx, vparall_size - 2) = T(0);
 			dfc_vperp_vperp(vparall_size - 1, vperp_idx) = T(0); dfc_vparall_vperp(vparall_size - 1, vperp_idx) = T(0);
 		}
+
+		//boundary condition: zero flow through vperp max
+		for (unsigned vparall_idx = 0; vparall_idx != vparall_size; ++vparall_idx) {
+			dfc_vperp_vperp(vparall_idx, vperp_size - 2) = T(0);  dfc_vparall_vperp(vparall_idx, vperp_size - 2) = T(0);
+			dfc_vparall_vparall(vperp_size - 1, vparall_idx) = T(0); dfc_vperp_vparall(vperp_size - 1, vparall_idx) = T(0);
+		}
+
+		//boundary condition: zero flow through vparall min
+		for (unsigned vperp_idx = 0; vperp_idx != vperp_size; ++vperp_idx) {
+			dfc_vparall_vparall(vperp_idx, 0) = T(0); dfc_vperp_vparall(vperp_idx, 0) = T(0);
+			dfc_vperp_vperp(0, vperp_idx) = T(0); dfc_vparall_vperp(0, vperp_idx) = T(0);
+		}
 	}
 }
