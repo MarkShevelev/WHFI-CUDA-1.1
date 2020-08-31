@@ -52,20 +52,24 @@ int main() {
 			vdf_diffusion<float>(
 				params, Space<float>{vparall_axis, vperp_axis}, vparall_size, vperp_size,
 				1.0e-6f, 0.f, //amplitude, amplitude time
-				2000, 1.f,  //iterations, dt
+				8000, 1.f,  //iterations, dt
 				false,         //initial core dfc export
 				true,         //dfc recalculation
-				true, 500,   //intermidiate growth rate export
-				true, 1000,   //intermidiate vdf export
+				false, 500,   //intermidiate growth rate export
+				false, 1000,   //intermidiate vdf export
 				1, 4           //vdf explort sampling rate 
 			);
 		}
 
 		if (false) {
-			auto params = init_parameters(0.95, 1.0 / 0.95, 1./6., -2.);
-			unsigned vparall_size = 512; unsigned vperp_size = 3072;
-			Axis<double> vparall_axis = construct_vparall_axis<double>(params,make_ZFunc<double>(1.e-5, 15.), vparall_size, -12., -0.96);
-			Axis<double> vperp_axis = { -0.75e-2, 1.5e-2 };
+			auto params = init_parameters(0.95, 1.0 / 0.95, 1. / 6., -2.);
+			unsigned vparall_size = 512; unsigned vperp_size = 2048;
+			Axis<double> vparall_axis = construct_vparall_axis(params, make_ZFunc(1.e-5, 15.), vparall_size, -9.5, -1.0);
+			//Axis<float> vparall_axis = { -9.f, 1.25e-2f };
+			Axis<double> vperp_axis = { -1.0e-2, 2.e-2 };
+
+			cout.precision(7); cout.setf(ios::scientific, ios::floatfield);
+			cout << vparall_axis.begin << ' ' << vparall_axis.step << endl;
 
 			//analytical growth rate
 			if (false) {
@@ -92,13 +96,13 @@ int main() {
 
 			vdf_diffusion<double>(
 				params, Space<double>{vparall_axis, vperp_axis}, vparall_size, vperp_size,
-				1.0e-5, 0., //amplitude, amplitude time
-				4000, 1.,  //iterations, dt
+				1.0e-6, 0., //amplitude, amplitude time
+				8000, 1.,  //iterations, dt
 				false,         //initial core dfc export
-				false,         //dfc recalculation
-				false, 1000,   //intermidiate growth rate export
+				true,         //dfc recalculation
+				false, 500,   //intermidiate growth rate export
 				false, 1000,   //intermidiate vdf export
-				1, 4           //vdf export sampling rate
+				1, 4           //vdf explort sampling rate 
 			);
 		}
 	} 
