@@ -191,6 +191,9 @@ namespace iki { namespace whfi {
 		//vdf wave energy history
 		std::vector<T> vdf_wave_energy_history(iterations);
 
+		//vdf full energy history
+		std::vector<T> vdf_full_energy_history(iterations);
+
 
 		for (unsigned cnt = 0; cnt != iterations; ++cnt) {
 			diffusion_solver.step();
@@ -201,6 +204,8 @@ namespace iki { namespace whfi {
 				cudaError_t cudaStatus;
 				diffusion::device::perp_axis_max_boundary_kernel<<<vperp_size / 512, 512>>> (diffusion_solver.x_prev.table());
 				diffusion::device::along_axis_min_boundary_kernel<<<vparall_size / 512, 512>>> (diffusion_solver.x_prev.table());
+				diffusion::device::perp_axis_min_boundary_kernel << <vperp_size / 512, 512 >> > (diffusion_solver.x_prev.table());
+				diffusion::device::along_axis_max_boundary_kernel << <vparall_size / 512, 512 >> > (diffusion_solver.x_prev.table());
 				if (cudaSuccess != (cudaStatus = cudaGetLastError()))
 					throw DeviceError("Boundary condition kernel failed: ", cudaStatus);
 			}
@@ -245,6 +250,9 @@ namespace iki { namespace whfi {
 			//vdf wave energy history
 			device_to_host_transfer(amplitude, h_amplitude);
 			vdf_wave_energy_history[cnt] = two_points_on_nonuniform_grid(h_amplitude, h_k);
+
+			//vdf full energy
+			vdf_full_energy_history[cnt] = vdf_wave_energy_history[cnt] + vdf_mean_perp_energy_history[cnt];
 
 			if (log_growth_rate_intermidiate && 0 != cnt && 0 == cnt % gr_log_period) {
 				std::ostringstream s_os; s_os << "./data/growth-rate-" << cnt << "-intermidiate.txt";
@@ -306,6 +314,15 @@ namespace iki { namespace whfi {
 			ascii_os.open("./data/wave-energy-history.txt");
 			for (unsigned idx = 0; idx != vdf_mean_perp_energy_history.size(); ++idx)
 				ascii_os << idx * dt << ' ' << vdf_wave_energy_history[idx] << '\n';
+		}
+
+		//log full energy history
+		{
+			std::ofstream ascii_os;
+			ascii_os << exceptional_scientific;
+			ascii_os.open("./data/full-energy-history.txt");
+			for (unsigned idx = 0; idx != vdf_full_energy_history.size(); ++idx)
+				ascii_os << idx * dt << ' ' << vdf_full_energy_history[idx] << '\n';
 		}
 
 		//log result growth rate and amplitude
