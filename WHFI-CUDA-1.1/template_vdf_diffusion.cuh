@@ -250,6 +250,7 @@ namespace iki { namespace whfi {
 			//vdf wave energy history
 			device_to_host_transfer(amplitude, h_amplitude);
 			vdf_wave_energy_history[cnt] = two_points_on_nonuniform_grid(h_amplitude, h_k);
+			//vdf_wave_energy_history[cnt] = three_points_on_nonumiform_grid(h_amplitude, h_k);
 
 			//vdf full energy
 			vdf_full_energy_history[cnt] = vdf_wave_energy_history[cnt] + vdf_mean_perp_energy_history[cnt];
